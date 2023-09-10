@@ -162,3 +162,7 @@ cython_debug/
 venv
 /venv
 resultados_jpg/
+
+results/cropped_results/
+
+results/correlated_images/

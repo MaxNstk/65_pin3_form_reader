@@ -86,11 +86,11 @@ for i in range(0,len(sorted_y_matches) - 1, 2):
 
 cropped_image = imgcopy.copy()[sorted_y_matches[0][1]:sorted_y_matches[3][1],sorted_x_matches[0][0]:sorted_x_matches[3][0]]
     
-cv2.imwrite(f'cropped_results/result_img_{generation_date_str}.png', cropped_image)
+cv2.imwrite(f'results/cropped_results/result_img_{generation_date_str}.png', cropped_image)
 
 # save results
 # power of 4 exaggeration of correlation image to emphasize peaks
-cv2.imwrite('prova_da_epcar_corr.png', (255*cv2.pow(corrimg,4)).clip(0,255).astype(np.uint8))
-cv2.imwrite('prova_da_epcar_star_corr_masked.png', (255*cv2.pow(corrcopy,4)).clip(0,255).astype(np.uint8))
-cv2.imwrite('prova_da_epcar_star_multi_match.png', imgcopy)
+cv2.imwrite(f'results/correlated_images/corr_{generation_date_str}.png', (255*cv2.pow(corrimg,4)).clip(0,255).astype(np.uint8))
+cv2.imwrite(f'results/correlated_images/corr_masked_{generation_date_str}.png', (255*cv2.pow(corrcopy,4)).clip(0,255).astype(np.uint8))
+cv2.imwrite(f'results/correlated_images/original_img_{generation_date_str}.png', imgcopy)
 
