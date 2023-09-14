@@ -1,45 +1,42 @@
-
-
 from operator import itemgetter
 import cv2
+import numpy as np
 from marker import Marker
 
 
 class MarkerList:
 
     markers:list = []
-    sorted_x_markers:list
-    sorted_y_markers:list
 
+    marker_a: np.ndarray
+    marker_b: np.ndarray
+    marker_c: np.ndarray
+    marker_d: np.ndarray 
+
+    def set_markers(self):
+        sorted_y_markers = sorted(self.markers, key=lambda marker: marker.y_center)
+        self.marker_a, self.marker_b = sorted(sorted_y_markers[:2], key=lambda marker: marker.x_center)
+        self.marker_c, self.marker_d = sorted(sorted_y_markers[2:], key=lambda marker: marker.x_center)
+
+    # todo fazer 4 atributos um para cada marker
     def add(self, marker:Marker):
         self.markers.append(marker)
+        if self.length() == 4:
+            self.set_markers()
     
-    def length(self):
+    def length(self): 
         return len(self.markers)
 
-    def sort_sides(self):
-        self.sorted_x_markers = sorted(self.markers, key=lambda marker: marker.x_center)
-        self.sorted_y_markers = sorted(self.markers, key=lambda marker: marker.y_center)
-
     def connect_markers(self, img):
-        self.sort_sides()
+        cv2.line(img, self.marker_a.get_center_coordinates(), self.marker_b.get_center_coordinates(), (0, 255, 255), 2)
+        cv2.line(img, self.marker_a.get_center_coordinates(), self.marker_c.get_center_coordinates(), (0, 255, 255), 2)
+        cv2.line(img, self.marker_b.get_center_coordinates(), self.marker_d.get_center_coordinates(), (0, 255, 255), 2)
+        cv2.line(img, self.marker_c.get_center_coordinates(), self.marker_d.get_center_coordinates(), (0, 255, 255), 2)
 
-        # Sort the matched points by x-coordinate
-        for i in range(0,len(self.sorted_x_markers) - 1, 2):
-            x1, y1 = self.sorted_x_markers[i].get_center_coordinates()
-            x2, y2 = self.sorted_x_markers[i + 1].get_center_coordinates()
-            cv2.line(img, (x1, y1), (x2, y2), (0, 255, 255), 2)
-
-        for i in range(0,len(self.sorted_y_markers) - 1, 2):
-            x1, y1 = self.sorted_y_markers[i].get_center_coordinates()
-            x2, y2 = self.sorted_y_markers[i + 1].get_center_coordinates()
-            cv2.line(img, (x1, y1), (x2, y2), (0, 255, 255), 2)
-    
     def draw_rectangle_around_markers(self, img, color=(0,0,255)):
         for marker in self.markers:
             marker.highlight(img, color)
     
     def cropp_around(self, img):
-        self.sort_sides()
-        # return img[self.sorted_y_matches[0][1]:self.sorted_y_matches[3][1],self.sorted_x_matches[0][0]:self.sorted_x_matches[3][0]]
-        return img[self.sorted_y_markers[0].y_center:self.sorted_y_markers[3].y_center,self.sorted_x_markers[0].x_center:self.sorted_x_markers[3].x_center]
+        return img[self.marker_a.y_center:self.marker_c.y_center,self.marker_a.x_center:self.marker_d.x_center]
+

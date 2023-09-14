@@ -35,3 +35,5 @@ class Marker:
     
     def get_center_coordinates(self):
         return self.x_center, self.y_center
+    
+    # def draw_circle()

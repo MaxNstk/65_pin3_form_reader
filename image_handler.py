@@ -11,14 +11,14 @@ class ImageHandler:
     base_image_path:str
     template_path:str = 'markers/target_72px_background.png'
 
-    base_image: np.ndarray = None
-    template: np.ndarray = None
+    base_image: 0
+    template: 0
 
-    template_height: np.ndarray = None
-    template_width: np.ndarray = None
+    template_height: int
+    template_width: int
 
-    match_thresh = 0.95              
-    markers_amount = 4 
+    match_thresh = 0.95
+    markers_amount = 4
 
     markers:MarkerList
 
