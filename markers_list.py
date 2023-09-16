@@ -13,6 +13,11 @@ class MarkerList:
     marker_c: np.ndarray
     marker_d: np.ndarray 
 
+    template:np.ndarray 
+
+    def __init__(self, template) -> None:
+        self.template = template
+
     def set_markers(self):
         sorted_y_markers = sorted(self.markers, key=lambda marker: marker.y_center)
         self.marker_a, self.marker_b = sorted(sorted_y_markers[:2], key=lambda marker: marker.x_center)
@@ -38,5 +43,7 @@ class MarkerList:
             marker.highlight(img, color)
     
     def cropp_around(self, img):
-        return img[self.marker_a.y_center:self.marker_c.y_center,self.marker_a.x_center:self.marker_d.x_center]
-
+        return img[self.marker_a.y_center:self.marker_c.y_center,self.marker_a.x_center:self.marker_b.x_center]
+    
+    def get_vertical_orientation(self):
+        pass

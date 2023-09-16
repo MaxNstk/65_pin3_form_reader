@@ -10,3 +10,4 @@ PDFConverter.convert_to_jpg(pdf_path='modelos_pdf/nosso_modelo.pdf', result_path
 
 handler = ImageHandler(base_image_path=img_path)
 handler.cropp_image()
+handler.show_image()
