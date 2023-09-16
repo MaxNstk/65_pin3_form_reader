@@ -1,6 +1,7 @@
 import cv2
 import numpy as np 
 import time
+from cell import Cell
 
 from marker import Marker
 from markers_list import MarkerList
@@ -8,13 +9,15 @@ from markers_list import MarkerList
 
 class ImageHandler:
 
-    base_image: 0
-    template: 0
+    base_image: np.ndarray
+    template: np.ndarray
 
     match_thresh = 0.95
     markers_amount = 4
 
     markers:MarkerList
+
+    cropped_image: np.ndarray
 
     def __init__(self, base_image_path,template_path='markers/target_72px_background.png') -> None:
         self.base_image = cv2.imread(base_image_path)
@@ -48,56 +51,62 @@ class ImageHandler:
                 break
 
         if self.markers.length() != 4:
-            raise Exception(f"Número de marcadores detectados difere de 4: {len(self.markers.length())} encontrados")
+            raise Exception(f"Número de marcadores detectados difere de 4: {self.markers.length()} encontrados")
 
         self.markers.draw_rectangle_around_markers(img_copy)
         self.markers.connect_markers(img_copy)
-        cropped_image = self.markers.cropp_around(img_copy)
+        self.cropped_image = self.markers.cropp_around(img_copy)
             
         generation_date_str = time.strftime('%Y%m%d-%H%M%S')
-        cv2.imwrite(f'results/cropped_results/result_img_{generation_date_str}.png', cropped_image)
-          # power of 4 exaggeration of correlation image to emphasize peaks
-          # cv2.imwrite(f'results/correlated_images/corr_{generation_date_str}.png', (255*cv2.pow(corrimg,4)).clip(0,255).astype(np.uint8))
-          # cv2.imwrite(f'results/correlated_images/corr_masked_{generation_date_str}.png', (255*cv2.pow(corrcopy,4)).clip(0,255).astype(np.uint8))
-          # cv2.imwrite(f'results/correlated_images/original_img_{generation_date_str}.png', imgcopy)
+        cv2.imwrite(f'results/cropped_results/result_img_{generation_date_str}.png', self.cropped_image)
+        return self.cropped_image
     
 
-    def show_image(self, image_path):
-        image = cv2.imread(image_path)
+    def configure_initial_positions(self):
 
-        # Create a copy of the image for drawing purposes
-        display_image = image.copy()
+        # Display the image
+        cv2.imshow('Image', self.cropped_image)
 
-        # Create variables to store the selection coordinates
-        selection_start = None
-        selection_end = None
-        selecting = False
+        # Initialize variables to store the starting and ending coordinates
+        start_x, start_y, end_x, end_y = -1, -1, -1, -1
 
-        # Define a callback function for mouse events
-        def select_region(event, x, y, flags, param):
-            global selecting, selection_start, selection_end
+        drawing = False
+        # Function to handle mouse events
+
+        def select_shape(event, x, y, flags, param):
+            nonlocal start_x, start_y, end_x, end_y, drawing
 
             if event == cv2.EVENT_LBUTTONDOWN:
-                selecting = True
-                selection_start = (x, y)
-
-            elif event == cv2.EVENT_MOUSEMOVE:
-                if selecting:
-                    selection_end = (x, y)
-                    display_image = image.copy()  # Refresh the display image
-                    cv2.rectangle(display_image, selection_start, selection_end, (0, 255, 0), 2)
-                    cv2.imshow('Image', display_image)
+                start_x, start_y = x, y
+                end_x, end_y = x, y
+                drawing = True
 
             elif event == cv2.EVENT_LBUTTONUP:
-                selecting = False
-                selection_end = (x, y)
-                cv2.rectangle(display_image, selection_start, selection_end, (0, 255, 0), 2)
-                cv2.imshow('Image', display_image)
+                end_x, end_y = x, y
+                drawing = False
 
-            # Create a window and set the mouse callback function
-            cv2.imshow('Image', display_image)
-            cv2.setMouseCallback('Image', select_region)
+            elif event == cv2.EVENT_MOUSEMOVE and start_x != -1 and drawing:
+                end_x, end_y = x, y
 
-            # Wait for a key press and close the window when done
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+
+        cv2.setMouseCallback('Image', select_shape)
+
+        while True:
+            clone = self.cropped_image.copy()
+
+            if start_x != -1:
+                cv2.rectangle(clone, (start_x, start_y), (end_x, end_y), (0, 255, 0), 2)
+
+            cv2.imshow('Image', clone)
+            key = cv2.waitKey(1) & 0xFF
+
+            if key == 255:  # Press 'c' to confirm the selection
+                break
+
+        # Extract the selected ROI from the original image
+        return start_x, start_y, end_x, end_y
+
+        # # Display the selected area
+        # cv2.imshow('Selected Area', selected_area)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
