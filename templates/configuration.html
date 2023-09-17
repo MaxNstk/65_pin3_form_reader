@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block style %}
+    <style>
+        /* Custom style for image and form layout */
+        .full-height {
+            height: 100vh;
+        }
+
+        .bg-image {
+            background-image: url('{{ url_for('static', filename=image_path) }}');
+            background-size: cover;
+            background-size: contain; 
+            background-repeat: no-repeat;
+            background-position: center;     
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid full-height">
+        <div class="row full-height">
+            <!-- Left side with image -->
+            <div class="col-md-8 bg-image">
+
+            </div>
+            
+            <!-- Right side with form -->
+            <div class="col-md-4">
+                <div class="container">
+                    <div class="row justify-content-center align-items-center full-height">
+                        <div class="col-md-12">
+                            <h1>Form Title</h1>
+                            <!-- Your form goes here -->
+                            <form>
+                                <div class="form-group">
+                                    <label for="exampleFormControlInput1">Email address</label>
+                                    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleFormControlSelect1">Example select</label>
+                                    <select class="form-control" id="exampleFormControlSelect1">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleFormControlTextarea1">Example textarea</label>
+                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

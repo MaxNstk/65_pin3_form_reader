@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{%block style %} 
+    <style>
+        /* Style the file input for a larger appearance */
+        .custom-file-label::after {
+            content: "Browse";
+        }
+        .custom-file-input.is-valid~.custom-file-label,
+        .was-validated .custom-file-input:valid~.custom-file-label {
+            border-color: #28a745;
+        }
+        .custom-file-input.is-invalid~.custom-file-label,
+        .was-validated .custom-file-input:invalid~.custom-file-label {
+            border-color: #dc3545;
+        }
+        /* Center the card vertically */
+        .vertical-center {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+{% endblock %}
+    
+{% block content %}
+
+    <div class="container vertical-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h1 class="card-title">Configuração inicial</h1>
+                        <!-- Form for uploading "Upload for formulário base" -->
+                        <form action="/upload" method="POST" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="base-form-upload">
+                                    Upload do formulário base .pdf:
+                                    <i class="fas fa-question-circle ml-2" data-toggle="tooltip" data-placement="top" title="Upload your base form file here."></i>
+                                </label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="base-form-upload" name="base-form-upload" onchange="updateLabel(this, 'base-form-label')">
+                                    <label class="custom-file-label" for="base-form-upload" id="base-form-label">Escolher arquivo</label>
+                                </div>
+                            </div>
+                            <!-- Form for uploading "Upload da configuracao.json" -->
+                            <div class="form-group">
+                                <label for="json-config-upload">
+                                    Upload da configuracao .json:
+                                    <i class="fas fa-question-circle ml-2" data-toggle="tooltip" data-placement="top" title="Upload your configuration JSON file here."></i>
+                                </label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="json-config-upload" name="json-config-upload" onchange="updateLabel(this, 'json-config-label')">
+                                    <label class="custom-file-label" for="json-config-upload" id="json-config-label">Escolher arquivo</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock%}
+
+{% block scripts %}
+<script>
+    // Initialize tooltips
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+
+    // Update the label text when a file is selected
+    function updateLabel(input, labelId) {
+        const label = document.getElementById(labelId);
+        if (input.files.length > 0) {
+            label.textContent = input.files[0].name;
+        } else {
+            label.textContent = 'Escolher arquivo';
+        }
+    }
+</script>
+{%endblock%}

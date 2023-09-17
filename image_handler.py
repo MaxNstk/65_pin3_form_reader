@@ -19,7 +19,7 @@ class ImageHandler:
 
     cropped_image: np.ndarray
 
-    def __init__(self, base_image_path,template_path='markers/target_72px_background.png') -> None:
+    def __init__(self, base_image_path,template_path='static/markers/target_72px_background.png') -> None:
         self.base_image = cv2.imread(base_image_path)
         self.template = cv2.imread(template_path)
         self.set_images_info()
@@ -28,7 +28,7 @@ class ImageHandler:
         template_height, template_width, _ = self.template.shape
         self.match_radius = max(template_height, template_width)//4
 
-    def cropp_image(self):
+    def cropp_image(self, path_to_save=None):
 
         # get correlation surface from template matching
         correlation_img = cv2.matchTemplate(self.base_image,self.template,cv2.TM_SQDIFF_NORMED)
@@ -56,9 +56,9 @@ class ImageHandler:
         self.markers.draw_rectangle_around_markers(img_copy)
         self.markers.connect_markers(img_copy)
         self.cropped_image = self.markers.cropp_around(img_copy)
-            
-        generation_date_str = time.strftime('%Y%m%d-%H%M%S')
-        cv2.imwrite(f'results/cropped_results/result_img_{generation_date_str}.png', self.cropped_image)
+
+        if path_to_save:
+            cv2.imwrite(path_to_save, self.cropped_image)
         return self.cropped_image
     
 
