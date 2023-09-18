@@ -28,7 +28,7 @@ class ImageHandler:
         template_height, template_width, _ = self.template.shape
         self.match_radius = max(template_height, template_width)//4
 
-    def cropp_image(self, path_to_save=None):
+    def cropp_image(self,):
 
         # get correlation surface from template matching
         correlation_img = cv2.matchTemplate(self.base_image,self.template,cv2.TM_SQDIFF_NORMED)
@@ -57,8 +57,6 @@ class ImageHandler:
         self.markers.connect_markers(img_copy)
         self.cropped_image = self.markers.cropp_around(img_copy)
 
-        if path_to_save:
-            cv2.imwrite(path_to_save, self.cropped_image)
         return self.cropped_image
     
 
@@ -106,7 +104,5 @@ class ImageHandler:
         # Extract the selected ROI from the original image
         return start_x, start_y, end_x, end_y
 
-        # # Display the selected area
-        # cv2.imshow('Selected Area', selected_area)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+    def save_cropped_image(self, path):
+            cv2.imwrite(path, self.cropped_image)

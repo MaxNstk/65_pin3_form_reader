@@ -17,6 +17,10 @@ app.config['IMAGE_RESULTS_FOLDER'] = UPLOAD_FOLDER
 CROPPED_IMAGES = 'static/03_cropped_images'
 app.config['CROPPED_IMAGES_FOLDER'] = CROPPED_IMAGES
 
+EDITED_IMAGES = 'static/04_edited_cropped_images'
+app.config['EDITED_IMAGES_FOLDER'] = EDITED_IMAGES
+
+app.config['CURRENT_FILE'] = None
 
 # Create the upload folder if it doesn't exist
 if not os.path.exists(UPLOAD_FOLDER):
@@ -47,15 +51,25 @@ def upload_file():
     
     img_handler = ImageHandler(base_image_path=file_path_jpg)
 
-    img_handler.cropp_image(path_to_save=os.path.join(app.config['CROPPED_IMAGES_FOLDER'], file_name_jpg))
-    
+    img_handler.cropp_image()
+    img_handler.save_cropped_image(os.path.join(app.config['CROPPED_IMAGES_FOLDER'], file_name_jpg)) # SAVE THE ORIGINLA PICTURE
+    img_handler.save_cropped_image(os.path.join(app.config['EDITED_IMAGES_FOLDER'], file_name_jpg)) # SAVE THE MODIFIED TO SHOW TO USER
+
     return redirect(f"/base-form-configuration/{file_name_jpg}")
 
 @app.route('/base-form-configuration/<file_name>')
 def configuration_form(file_name):
-    if not os.path.exists(os.path.join(app.config['CROPPED_IMAGES_FOLDER'], file_name)):
+    app.config['CURRENT_FILE'] = 'max'
+    if not os.path.exists(os.path.join(app.config['EDITED_IMAGES_FOLDER'], file_name)):
         return redirect('/')
-    return render_template("configuration.html",image_path=f'03_cropped_images/{file_name}')
+    return render_template("initial_config.html",image_path=f'04_edited_cropped_images/{file_name}')
+
+# @app.route('/set_initial_cell/<file>')
+# def configuration_form(file_name):
+#     if not os.path.exists(os.path.join(app.config['CROPPED_IMAGES_FOLDER'], file_name)):
+#         return redirect('/')
+#     return render_template("initial_config.html.html",image_path=f'03_cropped_images/{file_name}')
+
 
 
 if __name__ == '__main__':
