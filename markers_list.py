@@ -6,7 +6,7 @@ from marker import Marker
 
 class MarkerList:
 
-    markers:list = []
+    markers:list
 
     marker_a: np.ndarray
     marker_b: np.ndarray
@@ -17,6 +17,7 @@ class MarkerList:
 
     def __init__(self, template) -> None:
         self.template = template
+        self.markers = []
 
     def set_markers(self):
         sorted_y_markers = sorted(self.markers, key=lambda marker: marker.y_center)

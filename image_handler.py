@@ -1,7 +1,6 @@
+import asyncio
 import cv2
 import numpy as np 
-import time
-from cell import Cell
 
 from marker import Marker
 from markers_list import MarkerList
@@ -19,6 +18,12 @@ class ImageHandler:
 
     cropped_image: np.ndarray
 
+    key_mapping = {
+            'enter': 13,
+            'esc': 27,
+            # Add more key mappings as needed
+        }
+
     def __init__(self, base_image_path,template_path='static/markers/target_72px_background.png') -> None:
         self.base_image = cv2.imread(base_image_path)
         self.template = cv2.imread(template_path)
@@ -28,7 +33,7 @@ class ImageHandler:
         template_height, template_width, _ = self.template.shape
         self.match_radius = max(template_height, template_width)//4
 
-    def cropp_image(self, path_to_save=None):
+    def cropp_image(self,):
 
         # get correlation surface from template matching
         correlation_img = cv2.matchTemplate(self.base_image,self.template,cv2.TM_SQDIFF_NORMED)
@@ -57,15 +62,14 @@ class ImageHandler:
         self.markers.connect_markers(img_copy)
         self.cropped_image = self.markers.cropp_around(img_copy)
 
-        if path_to_save:
-            cv2.imwrite(path_to_save, self.cropped_image)
         return self.cropped_image
     
 
-    def configure_initial_positions(self):
-
-        # Display the image
-        cv2.imshow('Image', self.cropped_image)
+    async def configure_initial_positions(self,path=None):
+        image = self.cropped_image
+        if path:
+            image = cv2.imread(path)
+        cv2.imshow('Selecionar célular inicial', image)
 
         # Initialize variables to store the starting and ending coordinates
         start_x, start_y, end_x, end_y = -1, -1, -1, -1
@@ -89,24 +93,34 @@ class ImageHandler:
                 end_x, end_y = x, y
 
 
-        cv2.setMouseCallback('Image', select_shape)
+        cv2.setMouseCallback('Selecionar célular inicial', select_shape)
 
         while True:
-            clone = self.cropped_image.copy()
+            clone = image.copy()
 
             if start_x != -1:
                 cv2.rectangle(clone, (start_x, start_y), (end_x, end_y), (0, 255, 0), 2)
 
-            cv2.imshow('Image', clone)
+            cv2.imshow('Selecionar célular inicial', clone)
             key = cv2.waitKey(1) & 0xFF
 
-            if key == 255:  # Press 'c' to confirm the selection
+            # Check for Enter key
+            if key == self.key_mapping['enter']:
+                cv2.rectangle(image, (start_x, start_y), (end_x, end_y), (0, 255, 0), 2)
+                if path:
+                    cv2.imwrite(path, image)
                 break
 
-        # Extract the selected ROI from the original image
-        return start_x, start_y, end_x, end_y
+            # Check for Esc key
+            elif key == self.key_mapping['esc']:
+                break
+            
+            await asyncio.sleep(0.1)  # Sleep briefly to avoid high CPU usage
 
-        # # Display the selected area
-        # cv2.imshow('Selected Area', selected_area)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+
+        # Extract the selected ROI from the original image
+        
+        # return start_x, start_y, end_x, end_y
+
+    def save_cropped_image(self, path):
+        cv2.imwrite(path, self.cropped_image)

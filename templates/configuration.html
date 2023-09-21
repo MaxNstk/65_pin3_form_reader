@@ -1,29 +1,20 @@
+
 {% extends "base.html" %}
 
 {% block style %}
-    <style>
-        /* Custom style for image and form layout */
-        .full-height {
-            height: 100vh;
-        }
+<style>
 
-        .bg-image {
-            background-image: url('{{ url_for('static', filename=image_path) }}');
-            background-size: cover;
-            background-size: contain; 
-            background-repeat: no-repeat;
-            background-position: center;     
-        }
-    </style>
+</style>
 {% endblock %}
 
 {% block content %}
     <div class="container-fluid full-height">
         <div class="row full-height">
             <!-- Left side with image -->
-            <div class="col-md-8 bg-image">
-
-            </div>
+   <!-- Left side with image -->
+        <div class="col-md-8">
+            <img id="image" src="{{ url_for('update_image') }}" alt="My Image" style="max-width: 100%; max-height: 100%; width: auto; height: auto;">
+        </div>
             
             <!-- Right side with form -->
             <div class="col-md-4">
@@ -32,7 +23,7 @@
                         <div class="col-md-12">
                             <h1>Form Title</h1>
                             <!-- Your form goes here -->
-                            <form>
+                            <form action="/set_inital_marker/{{file_name}}" method="POST" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <label for="exampleFormControlInput1">Email address</label>
                                     <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
@@ -53,10 +44,46 @@
                                 </div>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </form>
+                            <button class="btn btn-primary" id="reloadButton">Reload Image</button>
+                            <button id="configureButton">Configure Initial Positions</button>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        const imageElement = document.getElementById('image');
+        const reloadButton = document.getElementById('reloadButton');
+        const updateImageButton = document.getElementById('configureButton');
+    // Function to update the image asynchronously
+    const updateImageAsync = () => {
+        fetch('/set_inital_marker/', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                // Change the image source to trigger a reload
+                imageElement.src = "{{ url_for('update_image') }}";
+                console.log(data.message); // Log the response message (for testing)
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        };
+    updateImageButton.addEventListener('click', () => {
+        // Call the function to update the image asynchronously
+        updateImageAsync();
+    });
+
+    reloadButton.addEventListener('click', () => {
+        // Change the image source to trigger a reload
+        imageElement.src = "";
+
+        imageElement.src = "{{ url_for('update_image') }}";
+    });
+    </script>
+
 {% endblock %}

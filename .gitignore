@@ -172,3 +172,8 @@ results/image_results/
 itp-forms/
 
 node_modules/
+
+01_pdf_uploads/
+02_img_results/
+03_cropped_images/
+04_edited_cropped_images/
