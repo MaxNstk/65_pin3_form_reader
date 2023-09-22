@@ -40,6 +40,104 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script defer >
+        class Services {
+            static handleResponseError(e){
+                return e.response
+            }
+            
+            static async get({
+                address,
+                params={},
+                props={}
+            }) {
+                try {
+                    const response = await axios.get(address,{
+                        headers: {"X-CSRFToken": CONTEXT.CSRF_TOKEN,},
+                        method: 'get',
+                        params,
+                        ...props,
+                    })
+                    return response
+                } catch (e) {
+                    return Services.handleResponseError(e)
+                }
+            }
+            
+            
+            static async post({address, payload}) {
+                try {
+                    const response = await axios({
+                        headers: {"X-CSRFToken": CONTEXT.CSRF_TOKEN,},
+                        url: address,
+                        method: 'post',
+                        datatype: 'json',
+                        data: {...payload, csrfmiddlewaretoken: CONTEXT.CSRF_TOKEN},
+                    })
+                    return response
+                } catch (e) {
+                    return Services.handleResponseError(e)
+                }
+                
+            }
+            
+            static async put({
+                address, payload,
+            }) {
+                try {
+                    
+                    const response = await axios({
+                        headers: {"X-CSRFToken": CONTEXT.CSRF_TOKEN,},
+                        url: address,
+                        method: 'put',
+                        datatype: 'json',
+                        data: {...payload, csrfmiddlewaretoken: CONTEXT.CSRF_TOKEN},
+                    })
+                    return response
+                } catch (e) {
+                    return Services.handleResponseError(e)
+                }
+            }
+            
+            static async patch({
+                address, payload,
+            }) {
+                try {
+                    
+                    const response = await axios({
+                        headers: {"X-CSRFToken": CONTEXT.CSRF_TOKEN,},
+                        url: address,
+                        method: 'patch',
+                        datatype: 'json',
+                        data: {...payload, csrfmiddlewaretoken: CONTEXT.CSRF_TOKEN},
+                    })
+                    return response
+                } catch (e) {
+                    return Services.handleResponseError(e)
+                }
+            }
+            static async delete({
+                address,
+            }) {
+                try {
+                    
+                    const response = await axios({
+                        headers: {"X-CSRFToken": CONTEXT.CSRF_TOKEN,},
+                        url: address,
+                        method: 'delete',
+                        datatype: 'json',
+                    })
+                    return response
+                } catch (e) {
+                    return  Services.handleResponseError(e)
+                }
+            }
+            
+        }
+        
+    </script>
     {% block scripts %}{%endblock%}
 </body>
 </html>

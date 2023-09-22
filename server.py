@@ -45,7 +45,7 @@ def upload_file():
     if 'base-form-upload' not in request.files: # or 'json-config-upload' not in request.files:
         return redirect(request.url)
 
-    # json_config_file = request.files['json-config-upload']
+      # json_config_file = request.files['json-config-upload']
 
     base_form_file = request.files['base-form-upload']
     
@@ -77,9 +77,13 @@ def configuration_form():
     
     return render_template("configuration.html")
 
-@app.route('/update_image/')
-def update_image():
+@app.route('/get_image/')
+def get_image():
     return send_from_directory(app.config['EDITED_IMAGES_FOLDER'], app.config['file_name_jpg'])
+
+@app.route('/get_original_image/')
+def get_original_image():
+    return send_from_directory(app.config['CROPPED_IMAGES_FOLDER'], app.config['file_name_jpg'])
 
 @app.route('/set_inital_marker/',  methods=['POST'])
 def set_initial_marker():

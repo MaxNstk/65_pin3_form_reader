@@ -13,7 +13,7 @@
             <!-- Left side with image -->
    <!-- Left side with image -->
         <div class="col-md-8">
-            <img id="image" src="{{ url_for('update_image') }}" alt="My Image" style="max-width: 100%; max-height: 100%; width: auto; height: auto;">
+            <img id="image" src="{{ url_for('get_image') }}" alt="My Image" style="max-width: 100%; max-height: 100%; width: auto; height: auto;">
         </div>
             
             <!-- Right side with form -->
@@ -60,13 +60,14 @@
         const imageElement = document.getElementById('image');
         const reloadButton = document.getElementById('reloadButton');
         const updateImageButton = document.getElementById('configureButton');
+
     // Function to update the image asynchronously
     const updateImageAsync = () => {
         fetch('/set_inital_marker/', { method: 'POST' })
             .then(response => response.json())
             .then(data => {
                 // Change the image source to trigger a reload
-                imageElement.src = "{{ url_for('update_image') }}";
+                imageElement.src = "{{ url_for('get_image') }}";
                 console.log(data.message); // Log the response message (for testing)
             })
             .catch(error => {
@@ -74,15 +75,12 @@
             });
         };
     updateImageButton.addEventListener('click', () => {
-        // Call the function to update the image asynchronously
         updateImageAsync();
     });
 
     reloadButton.addEventListener('click', () => {
-        // Change the image source to trigger a reload
-        imageElement.src = "";
+        imageElement.src = "{{ url_for('get_image') }}?" + new Date().getTime();
 
-        imageElement.src = "{{ url_for('update_image') }}";
     });
     </script>
 
