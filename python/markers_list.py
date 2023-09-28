@@ -1,7 +1,7 @@
-from operator import itemgetter
 import cv2
 import numpy as np
-from marker import Marker
+
+from python.marker import Marker
 
 
 class MarkerList:

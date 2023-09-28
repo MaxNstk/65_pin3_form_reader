@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load crispy_forms_tags %}
 {%block style %} 
     <style>
         /* Style the file input for a larger appearance */
@@ -32,8 +32,10 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <h1 class="card-title">Configuração inicial</h1>
+                            {% crispy form %}
+                            
                         <!-- Form for uploading "Upload for formulário base" -->
-                        <form action="/upload" method="POST" enctype="multipart/form-data">
+                        {% comment %} <form action="/upload" method="POST" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="base-form-upload">
                                     Upload do formulário base .pdf:
@@ -54,9 +56,9 @@
                                     <input type="file" class="custom-file-input" id="json-config-upload" name="json-config-upload" onchange="updateLabel(this, 'json-config-label')">
                                     <label class="custom-file-label" for="json-config-upload" id="json-config-label">Escolher arquivo</label>
                                 </div>
-                            </div>
+                            </div> 
                             <button type="submit" class="btn btn-primary">Enviar</button>
-                        </form>
+                      </form> {% endcomment %}
                     </div>
                 </div>
             </div>

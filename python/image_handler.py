@@ -1,9 +1,10 @@
 import asyncio
+from time import sleep
 import cv2
-import numpy as np 
+import numpy as np
+from python.marker import Marker
 
-from marker import Marker
-from markers_list import MarkerList
+from python.markers_list import MarkerList 
 
 
 class ImageHandler:
@@ -24,10 +25,13 @@ class ImageHandler:
             # Add more key mappings as needed
         }
 
-    def __init__(self, base_image_path,template_path='static/markers/target_72px_background.png') -> None:
-        self.base_image = cv2.imread(base_image_path)
-        self.template = cv2.imread(template_path)
-        self.set_images_info()
+    def __init__(self, base_image_path=None, cropped_image_path=None ,template_path='static/markers/target_72px_background.png') -> None:
+        if cropped_image_path:
+            self.cropped_image = cv2.imread(cropped_image_path)
+        if base_image_path:
+            self.base_image = cv2.imread(base_image_path)
+            self.template = cv2.imread(template_path)
+            self.set_images_info()
 
     def set_images_info(self):        
         template_height, template_width, _ = self.template.shape
@@ -65,17 +69,15 @@ class ImageHandler:
         return self.cropped_image
     
 
-    async def configure_initial_positions(self,path=None):
+    def configure_initial_positions(self,path=None):
         image = self.cropped_image
         if path:
             image = cv2.imread(path)
         cv2.imshow('Selecionar célular inicial', image)
 
-        # Initialize variables to store the starting and ending coordinates
         start_x, start_y, end_x, end_y = -1, -1, -1, -1
 
         drawing = False
-        # Function to handle mouse events
 
         def select_shape(event, x, y, flags, param):
             nonlocal start_x, start_y, end_x, end_y, drawing
@@ -114,13 +116,11 @@ class ImageHandler:
             # Check for Esc key
             elif key == self.key_mapping['esc']:
                 break
+
+            sleep(0.1)
             
-            await asyncio.sleep(0.1)  # Sleep briefly to avoid high CPU usage
-
-
-        # Extract the selected ROI from the original image
-        
-        # return start_x, start_y, end_x, end_y
+        cv2.destroyAllWindows()  # Close the OpenCV window
+        return start_x, start_y, end_x, end_y
 
     def save_cropped_image(self, path):
         cv2.imwrite(path, self.cropped_image)

@@ -16,7 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls.static import static
+from django.conf import settings
+
+from itp_forms.core.views import BaseConfigurationView, IndexView, set_marker
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-]
+    # path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
+    path('', IndexView.as_view(), name='index'),
+    path('base_configuration_view/<str:image_name>/', BaseConfigurationView.as_view(), name='base_configuration_view'),
+    path('set_marker/<str:image_name>/', set_marker, name='set_marker'),
+    
+    
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
