@@ -12,41 +12,17 @@
 {% block content %}
     <div class="container-fluid full-height">
         <div class="row full-height">
-            <!-- Left side with image -->
-   <!-- Left side with image -->    
         <div class="col-md-8">
             <img id="image" src="{{ image_path }}" alt="My Image" style="max-width: 100%; max-height: 100%; width: auto; height: auto;">
         </div>
             
-            <!-- Right side with form -->
             <div class="col-md-4">
                 <div class="container">
                     <div class="row justify-content-center align-items-center full-height">
                         <div class="col-md-12">
                             <h1> Configurar Formulário base </h1>
-                            <!-- Your form goes here -->
-                            <form method="POST" >
 
                                 {% crispy form %}
-                                <button class="btn btn-primary" id="configureButton"> Configurar agrupamento 1 </button>
-
-                               <div class="card">
-                                    <h5 class="card-header h5">Agrupamentos</h5>
-                                    <div class="card-body">
-                                        <div class='formset'>
-                                            {{ formset.management_form }}
-                                            {% for formset_form in formset %}
-                                                <h6 class="card-title">{{ formset_form.prefix }}</h5>
-                                                {% crispy formset_form %}
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                  </div> 
-
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </form>
-
-                            <button class="btn btn-primary" id="reloadButton">Atualizar Imagem </button>
 
                         </div>
                     </div>
@@ -57,54 +33,43 @@
 {% endblock %}
 
 {% block scripts %}
-
-    <script> 
-        $(document).ready(function(){
-
-            $('.formset').formset({            
-                addText: "<button class='btn btn-primary'> Incluir agrupamento </button>",
-                deleteText: "<button class='btn btn-danger'> Limpar </button>",
-                prefix: "Agrupamento",
-            })
-
-            // Function to handle button clicks
-            $('.grouping-form button').on('click', function() {
-                debugger
-                var formPrefix = this.id.split('_')[1];
-                // Call your JavaScript function with formPrefix
-                handleButtonClick(formPrefix);
-            });
-
-            function handleButtonClick(formPrefix) {
-                // Your JavaScript logic here, using the form prefix
-                console.log('Button clicked for form prefix: ' + formPrefix);
-            }
-
-        })
-    </script>
-
+    
      <script>
+        const reloadButton = document.getElementById('btn-update-image');
+
+        const configureFirstCellButton = document.getElementById('bt-set-grouping-1');
+        const configureSecondCellButton = document.getElementById('bt-set-grouping-2');
+        const configureThirdCellButton = document.getElementById('bt-set-grouping-3');
+        const configureFourthCellButton = document.getElementById('bt-set-grouping-2');
+
         const imageElement = document.getElementById('image');
-        const reloadButton = document.getElementById('reloadButton');
-        const updateImageButton = document.getElementById('configureButton');
+        
 
-    const updateImageAsync = () => {
-        axios({
-            method: "get",
-            url: "/set_marker/{{image_name}}",
-          }).then(function (response) {
-            console.log(response)
-          });
-        };
+    async function setInitialMarker(){
+        try {
+            debugger
+            const response = await axios.get("/set_marker/{{image_name}}",{
+                method: 'get',
+            })
+        } catch (e) {
+            console.log(e)
+        }
+        realodImage()
+    };
 
-    updateImageButton.addEventListener('click', () => {
-        updateImageAsync();
+        configureFirstCellButton.addEventListener('click', () => {
+        setInitialMarker();
     });
 
     reloadButton.addEventListener('click', () => {
-        imageElement.src = "{{ image_path }}?" + new Date().getTime();
-
+        realodImage();
     });
+
+    function realodImage(){
+        const Imagepath = imageElement.src;
+        imageElement.src = '';
+        imageElement.src = Imagepath+'?' + new Date().getTime();
+    }
     </script> 
 
 {% endblock %}

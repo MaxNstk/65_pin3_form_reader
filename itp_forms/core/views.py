@@ -4,11 +4,11 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.views import View
 from django.views.generic import TemplateView
 
-from itp_forms.core.forms import ConfigurationForm, GroupingFormset, IndexForm
+from itp_forms.core.forms import ConfigurationForm, IndexForm
 import os
+from python.config import Config
 from python.image_handler import ImageHandler
 
 from python.pdf_converter import PDFConverter
@@ -41,7 +41,6 @@ class IndexView(TemplateView):
         return ctx
 
     def post(self,request, *args, **kwargs):
-        global handler 
         
         form = IndexForm(request.POST, request.FILES)
         if not form.is_valid():
@@ -77,13 +76,16 @@ class BaseConfigurationView(TemplateView):
         ctx =  super().get_context_data(**kwargs)
         ctx['image_name'] = kwargs['image_name']
         ctx['image_path'] = os.path.join(settings.MEDIA_URL, '04_edited_cropped_images', kwargs['image_name'])
-        ctx['formset'] = GroupingFormset(data=self.request.POST or None, prefix='Agrupamento')
         ctx['form'] = ConfigurationForm(self.request.POST or None)
         return ctx
 
 def set_marker(request,image_name):
     handler = ImageHandler(cropped_image_path=os.path.join(CROPPED_IMAGES_FOLDER, image_name))
+    handler.save_cropped_image(path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
     positions = handler.configure_initial_positions(path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
+    Config.reset()
+    Config.instance().set_template_size(template_path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
+    Config.instance().set_initial_marker(positions)
     if positions:
         return JsonResponse({'positions':positions})
     return JsonResponse({})

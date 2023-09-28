@@ -116,8 +116,6 @@ class ImageHandler:
             # Check for Esc key
             elif key == self.key_mapping['esc']:
                 break
-
-            sleep(0.1)
             
         cv2.destroyAllWindows()  # Close the OpenCV window
         return start_x, start_y, end_x, end_y
