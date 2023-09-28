@@ -89,3 +89,6 @@ def set_marker(request,image_name):
     if positions:
         return JsonResponse({'positions':positions})
     return JsonResponse({})
+
+def update_image(request, image_name):
+    return JsonResponse({})

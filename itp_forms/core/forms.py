@@ -60,8 +60,8 @@ class ConfigurationForm(FormHelperForm):
         super().__init__(*args, **kwargs)
         self.helper.layout = Layout(
             Div(
-                Div(Button('update_image','Atualizar Imagem',css_class='btn btn-primary w-100', css_id='btn-update-image'), css_class='col-lg-6'),
-                Div(Button('update_image','Salvar',css_class='btn btn-primary w-100', css_id='btn-save'), css_class='col-lg-6'),
+                Div(Button('update_image','Recarregar imagem',css_class='btn btn-primary w-100', css_id='btn-update-image'), css_class='col-lg-6'),
+                Div(Button('update_image','Atualizar Informações',css_class='btn btn-primary w-100', css_id='btn-update-info'), css_class='col-lg-6'),
                 css_class='row'
             ),
             Div(

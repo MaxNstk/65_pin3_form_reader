@@ -34,20 +34,31 @@
 
 {% block scripts %}
     
-     <script>
-        const reloadButton = document.getElementById('btn-update-image');
+<script>
+    const reloadButton = document.getElementById('btn-update-image');
+    const UpdateInfoButton = document.getElementById('btn-update-info');
 
-        const configureFirstCellButton = document.getElementById('bt-set-grouping-1');
-        const configureSecondCellButton = document.getElementById('bt-set-grouping-2');
-        const configureThirdCellButton = document.getElementById('bt-set-grouping-3');
-        const configureFourthCellButton = document.getElementById('bt-set-grouping-2');
+    const configureFirstCellButton = document.getElementById('bt-set-grouping-1');
+    const configureSecondCellButton = document.getElementById('bt-set-grouping-2');
+    const configureThirdCellButton = document.getElementById('bt-set-grouping-3');
+    const configureFourthCellButton = document.getElementById('bt-set-grouping-2');
 
-        const imageElement = document.getElementById('image');
-        
+    const imageElement = document.getElementById('image');
+    
+    configureFirstCellButton.addEventListener('click', () => {
+        setInitialMarker();
+    });
+
+    reloadButton.addEventListener('click', () => {
+        realodImage();
+    });
+
+    UpdateInfoButton.addEventListener('click', () => {
+        UpdateImage();
+    });
 
     async function setInitialMarker(){
         try {
-            debugger
             const response = await axios.get("/set_marker/{{image_name}}",{
                 method: 'get',
             })
@@ -57,20 +68,31 @@
         realodImage()
     };
 
-        configureFirstCellButton.addEventListener('click', () => {
-        setInitialMarker();
-    });
-
-    reloadButton.addEventListener('click', () => {
-        realodImage();
-    });
-
     function realodImage(){
         const Imagepath = imageElement.src;
         imageElement.src = '';
         imageElement.src = Imagepath+'?' + new Date().getTime();
     }
+
+    async function UpdateImage(){
+        try {
+            const response = await axios.get("/update_image/{{image_name}}",{
+                method: 'post',
+                datatype: 'json',
+                data: {
+                    'column_amount' : $('#column_amount_id').val(),
+                    'y_space_between_cells' : $('#y_space_between_cells_id').val(),
+                    'x_space_between_cells' : $('#x_space_between_cells_id').val(),
+                    'first_group_row_amount' : $('#first_group_row_amount_id').val(),
+                }
+            })
+        } catch (e) {
+            console.log(e)
+        }
+        realodImage()
+    }
     </script> 
+
 
 {% endblock %}
 
