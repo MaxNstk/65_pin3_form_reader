@@ -13,16 +13,29 @@ class Config:
     template_width_ss:int = 1000
     template_height_ss:int = None
 
-    first_cell_x1:int
-    first_cell_y1:int
-    first_cell_x1:int
-    first_cell_y2:int
+    cell_size_x_px:int
+    cell_size_y_px:int
 
     column_amount: int
-    row_amount: int
 
-    ss_between_column: int
-    ss_between_rows: int
+    y_space_between_cells: int
+    x_space_between_cells: int
+
+    grouping_1_row_amount:int = None
+    grouping_1_x1:int = None
+    grouping_1_y1:int = None
+
+    grouping_2_row_amount:int = None
+    grouping_2_x1:int = None
+    grouping_2_y1:int = None
+
+    grouping_3_row_amount:int = None
+    grouping_3_x1:int = None
+    grouping_3_y1:int = None
+
+    grouping_4_row_amount:int = None
+    grouping_4_x1:int = None
+    grouping_4_y1:int = None
 
     @classmethod
     def instance(cls):
@@ -53,10 +66,39 @@ class Config:
         return NotImplementedError
     
     def set_initial_marker(self, positions):
-        self.first_cell_x1, self.first_cell_y1, self.first_cell_x1, self.first_cell_y2 = positions
+        self.grouping_1_x1, self.grouping_1_y1, first_cell_x2, first_cell_y2 = positions
+        self.cell_size_x_px = first_cell_x2 - self.grouping_1_x1
+        self.cell_size_y_px = first_cell_y2 - self.grouping_1_y1
+
+    def draw_marker_px(self, image, x1, y1):
+       cv2.rectangle(
+                    image, (x1, y1), 
+                    (x1+self.cell_size_x_px, y1+self.cell_size_y_px),
+                    (0, 255, 0), 2
+                    ) 
+    
+    def draw_positions(self, image_path):
+        image = cv2.imread(image_path)
+
+        # para cada agrupamento
+        for i in range(4):
+            # verifica se o agrupamento tem tods informações necessarias
+            if not self.grouping_has_all_info(i+1):
+                continue
+
+            for column in range(self.column_amount):
+                for row in range(getattr(self, f'grouping_{i+1}_row_amount')):
+                    self.draw_marker_px(
+                        image, 
+                        getattr(self,f'grouping_{i+1}_x1') + ((self.cell_size_x_px + self.x_space_between_cells)*column), 
+                        getattr(self,f'grouping_{i+1}_y1') + ((self.cell_size_y_px + self.y_space_between_cells)*row),
+                    )
 
 
-# c = Config(200, 100)
+        cv2.imwrite(image_path, image)
+    
+    def grouping_has_all_info(self, grouping_idx):
+       return getattr(self,f'grouping_{grouping_idx}_row_amount') and getattr(self,f'grouping_{grouping_idx}_x1') and getattr(self,f'grouping_{grouping_idx}_y1')
 
-# a, b = c.parse_px_posisiton_to_ss_position(100, 50)
-# print
+        
+

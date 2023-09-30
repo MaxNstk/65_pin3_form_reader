@@ -45,15 +45,15 @@ class ConfigurationForm(FormHelperForm):
     form_tag = True
     
     column_amount = forms.IntegerField(label='Quantidade de colunas')
-    y_space_between_cells = forms.FloatField(label='Espaçamento entre células verticais')
-    x_space_between_cells = forms.FloatField(label='Espaçamento entre células horizontais')
+    y_space_between_cells = forms.FloatField(label='Espaçamento entre linhas (px)')
+    x_space_between_cells = forms.FloatField(label='Espaçamento entre colunas (px)')
 
     column_amount = forms.IntegerField(label='Quantidade de colunas')
 
-    first_group_row_amount = forms.IntegerField(label='Quantidade de linhas do 1º Agrupamento')
-    second_group_row_amount = forms.IntegerField(label='Quantidade de linhas do 2º Agrupamento')
-    third_group_row_amount = forms.IntegerField(label='Quantidade de linhas do 3º Agrupamento')
-    fourth_group_row_amount = forms.IntegerField(label='Quantidade de linhas do 4º Agrupamento')
+    first_group_row_amount = forms.IntegerField(label='1º Agrupamento')
+    second_group_row_amount = forms.IntegerField(label='2º Agrupamento')
+    third_group_row_amount = forms.IntegerField(label='3º Agrupamento')
+    fourth_group_row_amount = forms.IntegerField(label='4º Agrupamento')
 
 
     def __init__(self, *args, **kwargs):
@@ -73,7 +73,7 @@ class ConfigurationForm(FormHelperForm):
             Div(
                 Div(
                     Div(
-                        Div(Field('first_group_row_amount'),css_class='col-lg-12'),
+                        Div(Field('first_group_row_amount', placeholder='Quantidade de linhas'),css_class='col-lg-12'),
                         Div(Button('Limpar', 'Definir célula inicial', css_class='btn btn-primary w-100', css_id='bt-set-grouping-1'),css_class='col-lg-12'),
                         css_class='row'
                     ),
@@ -82,7 +82,7 @@ class ConfigurationForm(FormHelperForm):
             Div(
                 Div(
                     Div(
-                        Div(Field('second_group_row_amount'),css_class='col-lg-12'),
+                        Div(Field('second_group_row_amount', placeholder='Quantidade de linhas'),css_class='col-lg-12'),
                         Div(Button('Limpar', 'Definir célula inicial', css_class='btn btn-primary w-100', css_id='bt-set-grouping-2'),css_class='col-lg-12'),
                         css_class='row'
                     ),
@@ -91,7 +91,7 @@ class ConfigurationForm(FormHelperForm):
             Div(
                 Div(
                     Div(
-                        Div(Field('third_group_row_amount'),css_class='col-lg-12'),
+                        Div(Field('third_group_row_amount', placeholder='Quantidade de linhas'),css_class='col-lg-12'),
                         Div(Button('Limpar', 'Definir célula inicial', css_class='btn btn-primary w-100', css_id='bt-set-grouping-3'),css_class='col-lg-12'),
                         css_class='row'
                     ),
@@ -100,7 +100,7 @@ class ConfigurationForm(FormHelperForm):
             Div(
                 Div(
                     Div(
-                        Div(Field('fourth_group_row_amount'),css_class='col-lg-12'),
+                        Div(Field('fourth_group_row_amount', placeholder='Quantidade de linhas'),css_class='col-lg-12'),
                         Div(Button('Limpar', 'Definir célula inicial', css_class='btn btn-primary w-100', css_id='bt-set-grouping-2'),css_class='col-lg-12'),
                         css_class='row'
                     ),

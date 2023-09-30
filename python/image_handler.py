@@ -109,8 +109,8 @@ class ImageHandler:
             # Check for Enter key
             if key == self.key_mapping['enter']:
                 cv2.rectangle(image, (start_x, start_y), (end_x, end_y), (0, 255, 0), 2)
-                if path:
-                    cv2.imwrite(path, image)
+                # if path:
+                #     cv2.imwrite(path, image)
                 break
 
             # Check for Esc key
@@ -118,7 +118,9 @@ class ImageHandler:
                 break
             
         cv2.destroyAllWindows()  # Close the OpenCV window
-        return start_x, start_y, end_x, end_y
+        x1, x2 = (start_x, end_x) if start_x < end_x else (end_x, start_x)
+        y1, y2 = (start_y, end_y) if start_y < end_y else (end_y, start_y)
+        return x1, y1, x2, y2
 
     def save_cropped_image(self, path):
         cv2.imwrite(path, self.cropped_image)

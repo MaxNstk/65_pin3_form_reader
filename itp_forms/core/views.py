@@ -1,10 +1,12 @@
 import time
 from typing import Any
+import cv2
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
+from django.views.decorators.csrf import csrf_exempt
 
 from itp_forms.core.forms import ConfigurationForm, IndexForm
 import os
@@ -84,11 +86,36 @@ def set_marker(request,image_name):
     handler.save_cropped_image(path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
     positions = handler.configure_initial_positions(path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
     Config.reset()
-    Config.instance().set_template_size(template_path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
+    Config.instance().set_template_size(template_path=os.path.join(CROPPED_IMAGES_FOLDER, image_name))
     Config.instance().set_initial_marker(positions)
+    Config.instance().draw_positions(os.path.join(EDITED_IMAGES_FOLDER, image_name))
+    
     if positions:
         return JsonResponse({'positions':positions})
     return JsonResponse({})
 
+
+@csrf_exempt
 def update_image(request, image_name):
+    config = Config.instance()
+    config.column_amount = int(request.POST.get('column_amount'))
+    config.y_space_between_cells = int(request.POST.get('y_space_between_cells'))
+    config.x_space_between_cells = int(request.POST.get('x_space_between_cells'))
+
+    try: config.grouping_1_row_amount = int(request.POST.get('first_group_row_amount', None))
+    except: config.grouping_1_row_amount = None
+    try: config.grouping_2_row_amount = int(request.POST.get('second_group_row_amount', None))
+    except: config.grouping_2_row_amount = None
+    try: config.grouping_3_row_amount = int(request.POST.get('third_group_row_amount', None))
+    except: config.grouping_3_row_amount = None
+    try: config.grouping_4_row_amount = int(request.POST.get('fourth_group_row_amount', None))
+    except: config.grouping_4_row_amount = None
+    
+    reset_edited_image(image_name)  
+    config.draw_positions(os.path.join(EDITED_IMAGES_FOLDER, image_name))
     return JsonResponse({})
+
+
+def reset_edited_image(image_name):
+    ImageHandler(cropped_image_path=os.path.join(CROPPED_IMAGES_FOLDER, image_name)
+                 ).save_cropped_image(os.path.join(EDITED_IMAGES_FOLDER, image_name))
