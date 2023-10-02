@@ -34,7 +34,8 @@
 
 {% block scripts %}
     
-<script>
+<script defer> 
+
     const reloadButton = document.getElementById('btn-update-image');
     const UpdateInfoButton = document.getElementById('btn-update-info');
 
@@ -42,6 +43,19 @@
     const configureSecondCellButton = document.getElementById('bt-set-grouping-2');
     const configureThirdCellButton = document.getElementById('bt-set-grouping-3');
     const configureFourthCellButton = document.getElementById('bt-set-grouping-2');
+
+    $('#id_column_amount').on('input', function() {
+        UpdateImage();
+    })
+    $('#id_y_space_between_cells').on('input', function() {
+        UpdateImage();
+    })
+    $('#id_x_space_between_cells').on('input', function() {
+        UpdateImage();
+    })
+    $('#id_first_group_row_amount').on('input', function() {
+        UpdateImage();
+    })
 
     const imageElement = document.getElementById('image');
     
@@ -74,7 +88,14 @@
         imageElement.src = Imagepath+'?' + new Date().getTime();
     }
 
+    function areValuesFilled(){
+       return ($('#id_column_amount').val() != '' && $('#id_y_space_between_cells').val() != '' && $('#id_x_space_between_cells').val() != '' && $('#id_first_group_row_amount').val())
+    }
+
     async function UpdateImage(){
+        if  (!areValuesFilled()){
+            return
+        }
         try {
             const response = await axios.post("/update_image/{{image_name}}/",{
                 'column_amount' : $('#id_column_amount').val(),
@@ -95,6 +116,7 @@
         }
         realodImage()
     }
+
     </script> 
 
 
