@@ -2,10 +2,11 @@ import asyncio
 from time import sleep
 import cv2
 import numpy as np
+from python.config import Config
 from python.marker import Marker
 
-from python.markers_list import MarkerList 
-
+from python.markers_list import MarkerList
+from python.pdf_converter import PDFConverter 
 
 class ImageHandler:
 
@@ -124,3 +125,6 @@ class ImageHandler:
 
     def save_cropped_image(self, path):
         cv2.imwrite(path, self.cropped_image)
+    
+    def read_answers(answers_path: str):
+        return

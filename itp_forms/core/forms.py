@@ -20,11 +20,9 @@ class IndexForm(FormHelperForm):
 
     form_tag = True
     add_submit = True
-
     
     base_form_upload = forms.FileField(required=False, label='Formulário base')
     json_config_upload = forms.FileField(required=False, label='Json de configuração')
-
 
 
 # class GroupingForm(FormHelperForm):
@@ -108,4 +106,9 @@ class ConfigurationForm(FormHelperForm):
             css_class="card"),
         )
         
+class AnswersForm(FormHelperForm):
+    
+    form_tag = True
+    add_submit = True
 
+    file = forms.FileField(required=False, label='Upload do arquivo de respostas')

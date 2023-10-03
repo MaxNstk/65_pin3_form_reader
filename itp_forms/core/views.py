@@ -3,12 +3,12 @@ from typing import Any
 import cv2
 from django.conf import settings
 from django.http import JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
 
-from itp_forms.core.forms import ConfigurationForm, IndexForm
+from itp_forms.core.forms import AnswersForm, ConfigurationForm, IndexForm
 import os
 from python.config import Config
 from python.image_handler import ImageHandler
@@ -19,6 +19,8 @@ UPLOAD_PDF_FOLDER = os.path.join(settings.MEDIA_ROOT, '01_pdf_uploads')
 PARSED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '02_img_results')
 CROPPED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '03_cropped_images')
 EDITED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '04_edited_cropped_images')
+PDF_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '05_pdf_answers_folder')
+IMAGES_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '06_images_answers_folder')
 
 def create_initial_files():
 
@@ -30,6 +32,10 @@ def create_initial_files():
         os.makedirs(CROPPED_IMAGES_FOLDER)
     if not os.path.exists(EDITED_IMAGES_FOLDER):
         os.makedirs(EDITED_IMAGES_FOLDER)
+    if not os.path.exists(PDF_ANSWERS_FOLDER):
+        os.makedirs(PDF_ANSWERS_FOLDER)
+    if not os.path.exists(IMAGES_ANSWERS_FOLDER):
+        os.makedirs(IMAGES_ANSWERS_FOLDER)
 
 class IndexView(TemplateView):
 
@@ -61,7 +67,6 @@ class IndexView(TemplateView):
 
         PDFConverter.convert_to_jpg(pdf_path=file_pdf_path, 
                             result_path=file_jpeg_path)
-        
 
         handler = ImageHandler(base_image_path=file_jpeg_path)
         handler.cropp_image()
@@ -119,3 +124,28 @@ def update_image(request, image_name):
 def reset_edited_image(image_name):
     ImageHandler(cropped_image_path=os.path.join(CROPPED_IMAGES_FOLDER, image_name)
                  ).save_cropped_image(os.path.join(EDITED_IMAGES_FOLDER, image_name))
+
+
+@csrf_exempt
+def interpret_answers_view(request):
+    form = AnswersForm(request.POST or None, request.FILES or None)
+    if request.method == 'GET':
+        return render(request, 'interpret_view.html', {'form':form})
+    
+    if not form.is_valid():
+        return form.invalid()     
+        
+    file = form.cleaned_data['file']
+    file_name = f"{time.strftime('%Y%m%d-%H%M%S')}_{file.name}"
+    file_pdf_path = os.path.join(PDF_ANSWERS_FOLDER, file_name)
+
+    with open(file_pdf_path, 'wb') as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
+
+    destination_folder = os.path.join(IMAGES_ANSWERS_FOLDER, file_name.replace('.pdf', ''))
+    os.makedirs(destination_folder)
+    PDFConverter.convert_to_pdf_massive(
+        pdf_path=file_pdf_path, 
+        folder=destination_folder
+    )

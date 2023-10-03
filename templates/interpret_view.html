@@ -4,7 +4,7 @@
     <style>
         /* Style the file input for a larger appearance */
         .custom-file-label::after {
-            content: "Browse";
+            content: "Browse"; 
         }
         .custom-file-input.is-valid~.custom-file-label,
         .was-validated .custom-file-input:valid~.custom-file-label {
@@ -31,7 +31,7 @@
             <div class="col-lg-12">
                 <div class="card text-center">
                     <div class="card-body">
-                        <h1 class="card-title">Configuração inicial</h1>
+                        <h1 class="card-title">Upload do formulário respostas</h1>
                             {% crispy form %}
                     </div>
                 </div>
@@ -40,22 +40,3 @@
     </div>
 
 {% endblock%}
-
-{% block scripts %}
-<script>
-    // Initialize tooltips
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
-
-    // Update the label text when a file is selected
-    function updateLabel(input, labelId) {
-        const label = document.getElementById(labelId);
-        if (input.files.length > 0) {
-            label.textContent = input.files[0].name;
-        } else {
-            label.textContent = 'Escolher arquivo';
-        }
-    }
-</script>
-{%endblock%}
