@@ -149,3 +149,34 @@ def interpret_answers_view(request):
         pdf_path=file_pdf_path, 
         folder=destination_folder
     )
+    for page in os.listdir(destination_folder):
+        file = os.path.join(destination_folder, page)    
+        image = cv2.imread(file)
+
+        w = Config.instance().cell_size_x_px
+        h = Config.instance().cell_size_y_px
+        x = Config.instance().grouping_1_x1
+        y = Config.instance().grouping_1_y1
+        
+        roi = image[y:y+h, x:x+w]
+
+        # Calculate the mean color within the ROI
+        mean_color = cv2.mean(roi)
+
+        # Check if the mean color is close to gray or black
+        # You can adjust the threshold values as needed
+        gray_threshold = 100  # Adjust this threshold for gray
+        black_threshold = 20  # Adjust this threshold for black
+
+        if mean_color[0] <= black_threshold:
+            print("The ROI is filled with black.")
+        elif mean_color[0] <= gray_threshold:
+            print("The ROI is filled with gray.")
+        else:
+            print("The ROI is neither black nor gray.")
+
+        # Display the ROI and its mean color (for visualization purposes)
+        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)  # Draw a green rectangle around the ROI
+        cv2.imshow("Image with ROI", image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
