@@ -1,5 +1,8 @@
 
 
+import json
+import os
+import time
 import cv2
 
 
@@ -46,6 +49,7 @@ class Config:
     @classmethod
     def reset(cls):
         cls._instance = cls()
+
     
     def set_template_size(self, template_path):
         template_height, template_width, _ = cv2.imread(template_path).shape
@@ -59,12 +63,19 @@ class Config:
     def parse_px_posisiton_to_ss_position(self, x_px, y_px):
         return int((x_px / self.template_width_px) * self.template_width_ss), int((y_px / self.template_height_px) * self.template_height_ss)
 
-    def to_json(self):
-        raise NotImplementedError
+    def to_json(self, folder):
+        json_object = json.dumps(Config.instance().__dict__)
+        with open(os.path.join(folder, f"{time.strftime('%Y%m%d-%H%M%S')}_config.json"), "w") as outfile:
+            outfile.write(json_object) 
     
-    def from_json(self, json_path):
-        return NotImplementedError
-    
+    @classmethod
+    def from_json(cls, json_file):
+        file_content = json_file.read().decode('utf-8')   
+        data = json.loads(file_content)
+        Config.reset()
+        for k,v in data.items():
+            setattr(cls.instance(), k,v)
+
     def set_initial_marker(self, positions):
         self.grouping_1_x1, self.grouping_1_y1, first_cell_x2, first_cell_y2 = positions
         self.cell_size_x_px = first_cell_x2 - self.grouping_1_x1
@@ -72,10 +83,10 @@ class Config:
 
     def draw_marker_px(self, image, x1, y1):
        cv2.rectangle(
-                    image, (x1, y1), 
-                    (x1+self.cell_size_x_px, y1+self.cell_size_y_px),
-                    (0, 255, 0), 2
-                    ) 
+            image, (x1, y1), 
+            (x1+self.cell_size_x_px, y1+self.cell_size_y_px),
+            (0, 255, 0), 2
+        ) 
     
     def draw_positions(self, image_path):
         image = cv2.imread(image_path)

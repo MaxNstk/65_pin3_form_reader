@@ -1,3 +1,4 @@
+import json
 import time
 from typing import Any
 import cv2
@@ -21,6 +22,7 @@ CROPPED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '03_cropped_images')
 EDITED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '04_edited_cropped_images')
 PDF_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '05_pdf_answers_folder')
 IMAGES_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '06_images_answers_folder')
+CROPPED_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '07_cropped_answers_folder')
 
 def create_initial_files():
 
@@ -36,6 +38,8 @@ def create_initial_files():
         os.makedirs(PDF_ANSWERS_FOLDER)
     if not os.path.exists(IMAGES_ANSWERS_FOLDER):
         os.makedirs(IMAGES_ANSWERS_FOLDER)
+    if not os.path.exists(CROPPED_ANSWERS_FOLDER):
+        os.makedirs(CROPPED_ANSWERS_FOLDER)
 
 class IndexView(TemplateView):
 
@@ -54,6 +58,9 @@ class IndexView(TemplateView):
         if not form.is_valid():
             return redirect('index')     
         
+        if form.cleaned_data.get('json_config_upload'):
+            Config.from_json(form.cleaned_data.get('json_config_upload'))
+            return redirect('render_answers')
         file = form.cleaned_data['base_form_upload']
         file_name = f"{time.strftime('%Y%m%d-%H%M%S')}_{file.name}"
         file_pdf_path = os.path.join(UPLOAD_PDF_FOLDER, file_name)
@@ -85,6 +92,7 @@ class BaseConfigurationView(TemplateView):
         ctx['image_path'] = os.path.join(settings.MEDIA_URL, '04_edited_cropped_images', kwargs['image_name'])
         ctx['form'] = ConfigurationForm(self.request.POST or None)
         return ctx
+
 
 def set_marker(request,image_name):
     handler = ImageHandler(cropped_image_path=os.path.join(CROPPED_IMAGES_FOLDER, image_name))
@@ -149,9 +157,11 @@ def interpret_answers_view(request):
         pdf_path=file_pdf_path, 
         folder=destination_folder
     )
+    pages = []
     for page in os.listdir(destination_folder):
         file = os.path.join(destination_folder, page)    
-        image = cv2.imread(file)
+        handler = ImageHandler(base_image_path=file)
+        image = handler.cropp_image()
 
         w = Config.instance().cell_size_x_px
         h = Config.instance().cell_size_y_px
@@ -180,3 +190,8 @@ def interpret_answers_view(request):
         cv2.imshow("Image with ROI", image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+
+@csrf_exempt
+def save_current_config(request):
+    Config.instance().to_json(os.path.join(settings.BASE_DIR, 'configuration_files'))
+    return JsonResponse({})

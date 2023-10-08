@@ -24,20 +24,6 @@ class IndexForm(FormHelperForm):
     base_form_upload = forms.FileField(required=False, label='Formulário base')
     json_config_upload = forms.FileField(required=False, label='Json de configuração')
 
-
-# class GroupingForm(FormHelperForm):
-    
-#     rows_amount = forms.IntegerField(label='Quantidade de colunas')
-
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.helper.form_class = 'grouping-form'
-#         self.helper.add_input(Submit('submit', 'Definir marcardor', css_class='btn-primary'))
-        
-# GroupingFormset = formset_factory(GroupingForm, formset=BaseFormSet, extra=1)
-
-
-
 class ConfigurationForm(FormHelperForm):
 
     form_tag = True

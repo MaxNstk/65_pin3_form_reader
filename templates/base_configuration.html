@@ -27,8 +27,8 @@
             </div>
         </div>
         <div class='row'>
-            <a href="{% url 'render_answers' %}"><button class='btn btn-primary col-lg-12'>
-                Confirmar
+            <a href="{% url 'render_answers' %}"><button onclick="saveConfig()" class='btn btn-primary col-lg-12'>
+                Salvar Configuração e prosseguir
             </button>
             </a>
         </div>
@@ -119,6 +119,17 @@
         }
         realodImage()
     }
+
+    async function saveConfig(){
+        try {
+            const response = await axios.post("/save_config/",{},
+            )
+            console.log(response.data)
+        } catch (e) {
+            console.log(e)
+        } 
+    }
+
     </script> 
 
 
