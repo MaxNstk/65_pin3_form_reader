@@ -1,12 +1,11 @@
 import asyncio
+import os
 from time import sleep
 import cv2
 import numpy as np
-from python.config import Config
-from python.marker import Marker
+from itp_forms.core.marker import Marker
 
-from python.markers_list import MarkerList
-from python.pdf_converter import PDFConverter 
+from itp_forms.core.markers_list import MarkerList
 
 class ImageHandler:
 
@@ -26,7 +25,7 @@ class ImageHandler:
             # Add more key mappings as needed
         }
 
-    def __init__(self, base_image_path=None, cropped_image_path=None ,template_path='static/markers/target_72px_background.png') -> None:
+    def __init__(self, base_image_path=None, cropped_image_path=None ,template_path=os.path.join('utils','markers','target_72px_background.png')) -> None:
         if cropped_image_path:
             self.cropped_image = cv2.imread(cropped_image_path)
         if base_image_path:

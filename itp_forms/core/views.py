@@ -1,4 +1,3 @@
-import json
 import time
 from typing import Any
 import cv2
@@ -8,13 +7,13 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
+from itp_forms.core.config import Config
+import os
 
 from itp_forms.core.forms import AnswersForm, ConfigurationForm, IndexForm
-import os
-from python.config import Config
-from python.image_handler import ImageHandler
+from itp_forms.core.image_handler import ImageHandler
 
-from python.pdf_converter import PDFConverter
+from itp_forms.core.pdf_converter import PDFConverter
 
 UPLOAD_PDF_FOLDER = os.path.join(settings.MEDIA_ROOT, '01_pdf_uploads')
 PARSED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '02_img_results')
@@ -53,6 +52,7 @@ class IndexView(TemplateView):
         return ctx
 
     def post(self,request, *args, **kwargs):
+        create_initial_files()
         
         form = IndexForm(request.POST, request.FILES)
         if not form.is_valid():
@@ -87,14 +87,15 @@ class BaseConfigurationView(TemplateView):
     template_name = "base_configuration.html"
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        create_initial_files()
         ctx =  super().get_context_data(**kwargs)
         ctx['image_name'] = kwargs['image_name']
         ctx['image_path'] = os.path.join(settings.MEDIA_URL, '04_edited_cropped_images', kwargs['image_name'])
         ctx['form'] = ConfigurationForm(self.request.POST or None)
         return ctx
 
-
 def set_marker(request,image_name):
+    create_initial_files()
     handler = ImageHandler(cropped_image_path=os.path.join(CROPPED_IMAGES_FOLDER, image_name))
     handler.save_cropped_image(path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
     positions = handler.configure_initial_positions(path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
@@ -110,6 +111,7 @@ def set_marker(request,image_name):
 
 @csrf_exempt
 def update_image(request, image_name):
+    create_initial_files()
     config = Config.instance()
     config.column_amount = int(request.POST.get('column_amount'))
     config.y_space_between_cells = int(request.POST.get('y_space_between_cells'))
@@ -130,12 +132,14 @@ def update_image(request, image_name):
 
 
 def reset_edited_image(image_name):
+    create_initial_files()
     ImageHandler(cropped_image_path=os.path.join(CROPPED_IMAGES_FOLDER, image_name)
                  ).save_cropped_image(os.path.join(EDITED_IMAGES_FOLDER, image_name))
 
 
 @csrf_exempt
 def interpret_answers_view(request):
+    create_initial_files()
     form = AnswersForm(request.POST or None, request.FILES or None)
     if request.method == 'GET':
         return render(request, 'interpret_view.html', {'form':form})
@@ -193,5 +197,5 @@ def interpret_answers_view(request):
 
 @csrf_exempt
 def save_current_config(request):
-    Config.instance().to_json(os.path.join(settings.BASE_DIR, 'configuration_files'))
+    Config.instance().to_json(os.path.join(settings.BASE_DIR, 'utils','configs'))
     return JsonResponse({})

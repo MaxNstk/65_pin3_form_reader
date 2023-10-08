@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
 
-from python.marker import Marker
+from itp_forms.core.marker import Marker
+
 
 
 class MarkerList:
