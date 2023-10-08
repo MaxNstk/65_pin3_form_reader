@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
+from itp_forms.core.answers_interpreter import AnswersInterpreter
 from itp_forms.core.config import Config
 import os
 
@@ -140,12 +141,19 @@ def reset_edited_image(image_name):
 @csrf_exempt
 def interpret_answers_view(request):
     create_initial_files()
+
+    if not Config.instance().grouping_1_row_amount:
+        return redirect('index')   
+    
     form = AnswersForm(request.POST or None, request.FILES or None)
     if request.method == 'GET':
         return render(request, 'interpret_view.html', {'form':form})
     
     if not form.is_valid():
-        return form.invalid()     
+        return form.invalid()    
+
+    Config.instance().fill_precentage_to_consider_filled = form.cleaned_data['fill_precentage_to_consider_filled']
+    Config.instance().fill_precentage_to_consider_doubtful = form.cleaned_data['fill_precentage_to_consider_doubtful']
         
     file = form.cleaned_data['file']
     file_name = f"{time.strftime('%Y%m%d-%H%M%S')}_{file.name}"
@@ -161,41 +169,13 @@ def interpret_answers_view(request):
         pdf_path=file_pdf_path, 
         folder=destination_folder
     )
-    pages = []
-    for page in os.listdir(destination_folder):
-        file = os.path.join(destination_folder, page)    
-        handler = ImageHandler(base_image_path=file)
-        image = handler.cropp_image()
-
-        w = Config.instance().cell_size_x_px
-        h = Config.instance().cell_size_y_px
-        x = Config.instance().grouping_1_x1
-        y = Config.instance().grouping_1_y1
-        
-        roi = image[y:y+h, x:x+w]
-
-        # Calculate the mean color within the ROI
-        mean_color = cv2.mean(roi)
-
-        # Check if the mean color is close to gray or black
-        # You can adjust the threshold values as needed
-        gray_threshold = 100  # Adjust this threshold for gray
-        black_threshold = 20  # Adjust this threshold for black
-
-        if mean_color[0] <= black_threshold:
-            print("The ROI is filled with black.")
-        elif mean_color[0] <= gray_threshold:
-            print("The ROI is filled with gray.")
-        else:
-            print("The ROI is neither black nor gray.")
-
-        # Display the ROI and its mean color (for visualization purposes)
-        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)  # Draw a green rectangle around the ROI
-        cv2.imshow("Image with ROI", image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    interpreter = AnswersInterpreter()
+    interpreter.interpret_answers(destination_folder)
+    return redirect('render_answers')
+    
 
 @csrf_exempt
 def save_current_config(request):
     Config.instance().to_json(os.path.join(settings.BASE_DIR, 'utils','configs'))
     return JsonResponse({})
+    

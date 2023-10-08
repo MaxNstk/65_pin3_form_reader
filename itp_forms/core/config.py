@@ -13,9 +13,6 @@ class Config:
     template_height_px:int
     template_width_px:int
 
-    template_width_ss:int = 1000
-    template_height_ss:int = None
-
     cell_size_x_px:int
     cell_size_y_px:int
 
@@ -40,6 +37,9 @@ class Config:
     grouping_4_x1:int = None
     grouping_4_y1:int = None
 
+    fill_precentage_to_consider_filled = 70
+    fill_precentage_to_consider_doubtful = 50
+
     @classmethod
     def instance(cls):
         if cls._instance is None:
@@ -55,13 +55,9 @@ class Config:
         template_height, template_width, _ = cv2.imread(template_path).shape
         self.template_width_px = int(template_width)
         self.template_height_px = int(template_height)
-        self.calculate_proportion()        
 
-    def calculate_proportion(self):
-        self.template_height_ss = self.template_height_px * (self.template_width_ss / self.template_width_px)
-
-    def parse_px_posisiton_to_ss_position(self, x_px, y_px):
-        return int((x_px / self.template_width_px) * self.template_width_ss), int((y_px / self.template_height_px) * self.template_height_ss)
+    def get_multiply_reason(self, image_height, image_width):
+        return image_height / self.template_height_px, image_width / self.template_width_px
 
     def to_json(self, folder):
         json_object = json.dumps(Config.instance().__dict__)
@@ -110,6 +106,5 @@ class Config:
     
     def grouping_has_all_info(self, grouping_idx):
        return getattr(self,f'grouping_{grouping_idx}_row_amount') and getattr(self,f'grouping_{grouping_idx}_x1') and getattr(self,f'grouping_{grouping_idx}_y1')
-
         
 

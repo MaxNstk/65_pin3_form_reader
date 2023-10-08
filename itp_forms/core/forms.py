@@ -3,6 +3,8 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Button,Layout, Div, Field, HTML
 
+from itp_forms.core.config import Config
+
 class FormHelperForm(forms.Form):
 
     form_tag = False
@@ -98,3 +100,18 @@ class AnswersForm(FormHelperForm):
     add_submit = True
 
     file = forms.FileField(required=False, label='Upload do arquivo de respostas')
+    fill_precentage_to_consider_filled = forms.IntegerField(required=True, label='Percentual para se considerado preenchido',
+        help_text='Percentual mínimo de preenchimento da célula para ser classificada como preenchida.')
+    fill_precentage_to_consider_doubtful = forms.IntegerField(required=True, label='Percentual para se considerado duvidoso',
+        help_text='Percentual mínimo de preenchimento da célula para ser classificada como duvidosa.')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['fill_precentage_to_consider_filled'].initial = Config.instance().fill_precentage_to_consider_filled
+        self.fields['fill_precentage_to_consider_doubtful'].initial = Config.instance().fill_precentage_to_consider_doubtful
+
+        self.helper.layout = Layout(
+            Div(Div(Field('file'), css_class='col-lg-12'),css_class='row'),
+            Div(Div(Field('fill_precentage_to_consider_filled',), css_class='col-lg-12'),css_class='row justify-content-center'),
+            Div(Div(Field('fill_precentage_to_consider_doubtful',), css_class='col-lg-12'),css_class='row justify-content-center'),
+        )
