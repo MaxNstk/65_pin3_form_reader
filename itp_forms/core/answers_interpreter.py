@@ -29,6 +29,7 @@ class AnswersInterpreter:
             'filled_questions':{},
             'doubt_questions':{}        
         }
+        
         handler = ImageHandler(base_image_path=file)
         image = handler.cropp_image()
 
@@ -103,35 +104,4 @@ class AnswersInterpreter:
             cv2.imshow("Image with ROI", image)
             cv2.waitKey(0)
             cv2.destroyAllWindows() 
-       
-
-        # w = int(Config.instance().cell_size_x_px * width_reason)
-        # h = int(Config.instance().cell_size_y_px * height_reason)
-        # x = int(Config.instance().grouping_1_x1 * width_reason)
-        # y = int(Config.instance().grouping_1_y1 * height_reason)
-        
-        # roi = image[y:y+h, x:x+w]
-
-        # # Calculate the mean color within the ROI
-        # mean_color = cv2.mean(roi)
-
-        # # Check if the mean color is close to gray or black
-        # # You can adjust the threshold values as needed
-        # gray_threshold = 100  # Adjust this threshold for gray
-        # black_threshold = 20  # Adjust this threshold for black
-
-        # if mean_color[0] <= black_threshold:
-        #     print("The ROI is filled with black.")
-        # elif mean_color[0] <= gray_threshold:
-        #     print("The ROI is filled with gray.")
-        # else:
-        #     print("The ROI is neither black nor gray.")
-
-        # # Display the ROI and its mean color (for visualization purposes)
-        # cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)  # Draw a green rectangle around the ROI
-        # cv2.imshow("Image with ROI", image)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows() 
-
-
-            
+    

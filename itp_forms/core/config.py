@@ -49,7 +49,12 @@ class Config:
     @classmethod
     def reset(cls):
         cls._instance = cls()
-
+    
+    @staticmethod
+    def is_empty():
+        if Config._instance is None: return True
+        conf = Config.instance()
+        return not conf.grouping_1_row_amount or not conf.grouping_1_x1 or not conf.grouping_1_y1
     
     def set_template_size(self, template_path):
         template_height, template_width, _ = cv2.imread(template_path).shape

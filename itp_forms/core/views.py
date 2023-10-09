@@ -22,7 +22,6 @@ CROPPED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '03_cropped_images')
 EDITED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '04_edited_cropped_images')
 PDF_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '05_pdf_answers_folder')
 IMAGES_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '06_images_answers_folder')
-CROPPED_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '07_cropped_answers_folder')
 
 def create_initial_files():
 
@@ -38,8 +37,6 @@ def create_initial_files():
         os.makedirs(PDF_ANSWERS_FOLDER)
     if not os.path.exists(IMAGES_ANSWERS_FOLDER):
         os.makedirs(IMAGES_ANSWERS_FOLDER)
-    if not os.path.exists(CROPPED_ANSWERS_FOLDER):
-        os.makedirs(CROPPED_ANSWERS_FOLDER)
 
 class IndexView(TemplateView):
 
@@ -142,7 +139,7 @@ def reset_edited_image(image_name):
 def interpret_answers_view(request):
     create_initial_files()
 
-    if not Config.instance().grouping_1_row_amount:
+    if Config.is_empty():
         return redirect('index')   
     
     form = AnswersForm(request.POST or None, request.FILES or None)
@@ -176,6 +173,7 @@ def interpret_answers_view(request):
 
 @csrf_exempt
 def save_current_config(request):
+    create_initial_files()
     Config.instance().to_json(os.path.join(settings.BASE_DIR, 'utils','configs'))
     return JsonResponse({})
     
