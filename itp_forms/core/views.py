@@ -22,6 +22,7 @@ CROPPED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '03_cropped_images')
 EDITED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '04_edited_cropped_images')
 PDF_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '05_pdf_answers_folder')
 IMAGES_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '06_images_answers_folder')
+XLSX_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '07_xlsx_answers_folder')
 
 def create_initial_files():
 
@@ -37,6 +38,8 @@ def create_initial_files():
         os.makedirs(PDF_ANSWERS_FOLDER)
     if not os.path.exists(IMAGES_ANSWERS_FOLDER):
         os.makedirs(IMAGES_ANSWERS_FOLDER)
+    if not os.path.exists(XLSX_ANSWERS_FOLDER):
+        os.makedirs(XLSX_ANSWERS_FOLDER)
 
 class IndexView(TemplateView):
 
@@ -166,8 +169,17 @@ def interpret_answers_view(request):
         pdf_path=file_pdf_path, 
         folder=destination_folder
     )
-    interpreter = AnswersInterpreter()
-    interpreter.interpret_answers(destination_folder)
+    
+    interpreter = AnswersInterpreter(destination_folder)
+    try:
+        return interpreter.interpret_answers()
+    except Exception as e:
+        print(e)
+        print(e)
+        print(e)
+        print(e)
+        print(e)
+        print(e)
     return redirect('render_answers')
     
 

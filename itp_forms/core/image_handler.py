@@ -1,6 +1,7 @@
 import asyncio
 import os
 from time import sleep
+import time
 import cv2
 import numpy as np
 from itp_forms.core.marker import Marker
@@ -17,7 +18,7 @@ class ImageHandler:
 
     markers:MarkerList
 
-    cropped_image: np.ndarray
+    cropped_image: np.ndarray = None
 
     key_mapping = {
             'enter': 13,
@@ -36,14 +37,12 @@ class ImageHandler:
     def set_images_info(self):        
         template_height, template_width, _ = self.template.shape
         self.match_radius = max(template_height, template_width)//4
-
-    def cropp_image(self,):
-
+    
+    def set_markers(self):
         # get correlation surface from template matching
         correlation_img = cv2.matchTemplate(self.base_image,self.template,cv2.TM_SQDIFF_NORMED)
 
         # get locations of all peaks higher than match_thresh for up to num_matches
-        img_copy = self.base_image.copy()
         corrcopy = correlation_img.copy()
 
         self.markers = MarkerList(self.template)
@@ -62,6 +61,11 @@ class ImageHandler:
         if self.markers.length() != 4:
             raise Exception(f"Número de marcadores detectados difere de 4: {self.markers.length()} encontrados")
 
+    def cropp_image(self):
+        if not self.cropped_image:
+            self.set_markers()
+
+        img_copy = self.base_image.copy()
         self.markers.draw_rectangle_around_markers(img_copy)
         self.markers.connect_markers(img_copy)
         self.cropped_image = self.markers.cropp_around(img_copy)
@@ -127,3 +131,31 @@ class ImageHandler:
     
     def read_answers(answers_path: str):
         return
+    
+    def rotate_image(self):
+
+        # Define the two points in pixel coordinates
+        point1 = self.markers.marker_a.get_center_coordinates()
+        point2 = self.markers.marker_c.get_center_coordinates()
+
+        # Calculate the angle of rotation to align the points in the y-axis
+        dy = point2[1] - point1[1]
+        angle = np.arctan2(dy, abs(point2[0] - point1[0]))  # Calculate the angle in radians
+
+        # Get the image center point (assumes it's the center)
+        image_center = tuple(np.array(self.cropped_image.shape[1::-1]) / 2)
+
+        # Create a rotation matrix
+        rotation_matrix = cv2.getRotationMatrix2D(image_center, np.degrees(angle), scale=1)
+
+        # Apply the rotation to the image
+        rotated_image = cv2.warpAffine(self.cropped_image, rotation_matrix, self.cropped_image.shape[1::-1], flags=cv2.INTER_LINEAR)
+
+        # Display or save the rotated image
+        cv2.imwrite(f"media/teste/{time.strftime('%Y%m%d-%H%M%S')}.jpg",rotated_image)
+        cv2.imshow('Rotated Image', rotated_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        # If you want to save the rotated image
+        # cv2.imwrite('rotated_image.jpg', rotated_image)

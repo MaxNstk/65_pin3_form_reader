@@ -9,10 +9,10 @@ class MarkerList:
 
     markers:list
 
-    marker_a: np.ndarray
-    marker_b: np.ndarray
-    marker_c: np.ndarray
-    marker_d: np.ndarray 
+    marker_a: np.ndarray # esquerda acima
+    marker_b: np.ndarray # direita acima
+    marker_c: np.ndarray # esquerda baixo
+    marker_d: np.ndarray # direita baixo
 
     template:np.ndarray 
 

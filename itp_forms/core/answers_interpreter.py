@@ -1,7 +1,10 @@
 
 
 import os
+from threading import Thread
 import cv2
+from django.shortcuts import redirect
+from openpyxl import Workbook
 
 from itp_forms.core.config import Config
 from itp_forms.core.image_handler import ImageHandler
@@ -11,14 +14,28 @@ class AnswersInterpreter:
 
     alphabet = tuple('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 
+    def __init__(self,answers_folder) -> None:
+        self.answers_folder = answers_folder
+        self.wb = Workbook()
+        self.ws = self.wb.active
+        self.ws.title = f"Exportação de do formulário {os.path.basename(self.answers_folder)}"
 
-    def interpret_answers(self, answers_folder):
-        pages = []
-        for page in os.listdir(answers_folder):
-            file = os.path.join(answers_folder, page) 
-            pages.append(self.interpret_page(file))
+    def interpret_answers(self):
+        threads = []
+        for row, page in enumerate(os.listdir(self.answers_folder), 1):
+            file = os.path.join(self.answers_folder, page) 
+            # pages.append(self.interpret_page(file, row))
+            thread = Thread(target=self.interpret_page, args=(file, row))
+            threads.append(thread)
+            thread.start()
 
-    def interpret_page(self, file):  
+        for thread in threads:
+            thread.join()
+
+        self.wb.save('media/teste/foi.xlsx')
+        return redirect("render_answers")
+        
+    def interpret_page(self, file, ws_row_index):  
         """
             1 : A
             2: B C
@@ -32,6 +49,7 @@ class AnswersInterpreter:
         
         handler = ImageHandler(base_image_path=file)
         image = handler.cropp_image()
+        # handler.rotate_image()
 
         image_height, image_width, _ = image.shape
 
@@ -95,13 +113,17 @@ class AnswersInterpreter:
                 for row_idx, row in enumerate(grouping):
                     info['filled_questions'][row_idx+1] = ''
                     info['doubt_questions'][row_idx+1] = ''
+                    ws_cell = self.ws[f"{self.alphabet[row_idx]}{ws_row_index}"]
+                    ws_cell.value = ''
                     for col_idx, col in enumerate(row):
                         if col <= max_filled_cell_color:
                             info['filled_questions'][row_idx+1] += f' {self.alphabet[col_idx]}'
+                            ws_cell.value = ws_cell.value + f' {self.alphabet[col_idx]}'
                         elif col <= max_doubtful_cell_color:
                             info['doubt_questions'][row_idx+1] += f' {self.alphabet[col_idx]}'
 
-            cv2.imshow("Image with ROI", image)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows() 
+            # cv2.imshow("Image with ROI", image)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows() 
+            # return mean_cells_color
     
