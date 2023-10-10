@@ -3,6 +3,7 @@
 import os
 from threading import Thread
 import cv2
+from django.conf import settings
 from django.shortcuts import redirect
 from openpyxl import Workbook
 
@@ -10,21 +11,34 @@ from itp_forms.core.config import Config
 from itp_forms.core.image_handler import ImageHandler
 
 
+
+XLSX_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '07_xlsx_answers_folder')
+ALPHABET = tuple('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    
 class AnswersInterpreter:
 
-    alphabet = tuple('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 
     def __init__(self,answers_folder) -> None:
+        if not os.path.exists(XLSX_ANSWERS_FOLDER):
+            os.makedirs(XLSX_ANSWERS_FOLDER)
         self.answers_folder = answers_folder
         self.wb = Workbook()
         self.ws = self.wb.active
         self.ws.title = f"Exportação de do formulário {os.path.basename(self.answers_folder)}"
+        self.set_initial_ws_layout()
+        self.wb.save("media/07_xlsx_answers_folder/asd.xlsx")
+    
+    def set_initial_ws_layout(self):
+        self.ws["A1"] = "Questão"
+        for row, page in enumerate(os.listdir(self.answers_folder), 1):
+            self.ws[f"A{row+1}"] = f"Formulário {row}"
+        for question in range(Config.instance().get_questions_amount()):
+            self.ws[f"{ALPHABET[question+1]}1"] = question+1
 
     def interpret_answers(self):
         threads = []
         for row, page in enumerate(os.listdir(self.answers_folder), 1):
             file = os.path.join(self.answers_folder, page) 
-            # pages.append(self.interpret_page(file, row))
             thread = Thread(target=self.interpret_page, args=(file, row))
             threads.append(thread)
             thread.start()
@@ -32,7 +46,7 @@ class AnswersInterpreter:
         for thread in threads:
             thread.join()
 
-        self.wb.save('media/teste/foi.xlsx')
+        self.wb.save(os.path.join(XLSX_ANSWERS_FOLDER, f'{os.path.basename(self.answers_folder)}.xlsx'))
         return redirect("render_answers")
         
     def interpret_page(self, file, ws_row_index):  
@@ -113,17 +127,12 @@ class AnswersInterpreter:
                 for row_idx, row in enumerate(grouping):
                     info['filled_questions'][row_idx+1] = ''
                     info['doubt_questions'][row_idx+1] = ''
-                    ws_cell = self.ws[f"{self.alphabet[row_idx]}{ws_row_index}"]
+                    ws_cell = self.ws[f"{ALPHABET[row_idx+1]}{ws_row_index+1}"]
                     ws_cell.value = ''
                     for col_idx, col in enumerate(row):
                         if col <= max_filled_cell_color:
-                            info['filled_questions'][row_idx+1] += f' {self.alphabet[col_idx]}'
-                            ws_cell.value = ws_cell.value + f' {self.alphabet[col_idx]}'
+                            info['filled_questions'][row_idx+1] += f' {ALPHABET[col_idx]}'
+                            ws_cell.value = ws_cell.value + f' {ALPHABET[col_idx]}'
                         elif col <= max_doubtful_cell_color:
-                            info['doubt_questions'][row_idx+1] += f' {self.alphabet[col_idx]}'
-
-            # cv2.imshow("Image with ROI", image)
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows() 
-            # return mean_cells_color
+                            info['doubt_questions'][row_idx+1] += f' {ALPHABET[col_idx]}'
     

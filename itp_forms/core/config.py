@@ -111,5 +111,17 @@ class Config:
     
     def grouping_has_all_info(self, grouping_idx):
        return getattr(self,f'grouping_{grouping_idx}_row_amount') and getattr(self,f'grouping_{grouping_idx}_x1') and getattr(self,f'grouping_{grouping_idx}_y1')
+    
+    def get_questions_amount(self):
+        result = 0
+        if self.grouping_1_row_amount:
+            result += self.grouping_1_row_amount
+        if self.grouping_2_row_amount:
+            result += self.grouping_2_row_amount
+        if self.grouping_3_row_amount:
+            result += self.grouping_3_row_amount
+        if self.grouping_4_row_amount:
+            result += self.grouping_4_row_amount
+        return result
         
 

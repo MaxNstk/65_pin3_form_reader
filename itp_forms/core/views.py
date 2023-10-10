@@ -22,7 +22,6 @@ CROPPED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '03_cropped_images')
 EDITED_IMAGES_FOLDER = os.path.join(settings.MEDIA_ROOT, '04_edited_cropped_images')
 PDF_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '05_pdf_answers_folder')
 IMAGES_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '06_images_answers_folder')
-XLSX_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '07_xlsx_answers_folder')
 
 def create_initial_files():
 
@@ -38,8 +37,7 @@ def create_initial_files():
         os.makedirs(PDF_ANSWERS_FOLDER)
     if not os.path.exists(IMAGES_ANSWERS_FOLDER):
         os.makedirs(IMAGES_ANSWERS_FOLDER)
-    if not os.path.exists(XLSX_ANSWERS_FOLDER):
-        os.makedirs(XLSX_ANSWERS_FOLDER)
+
 
 class IndexView(TemplateView):
 
@@ -147,7 +145,7 @@ def interpret_answers_view(request):
     
     form = AnswersForm(request.POST or None, request.FILES or None)
     if request.method == 'GET':
-        return render(request, 'interpret_view.html', {'form':form})
+        return render(request, 'results_folder_upload_view.html', {'form':form})
     
     if not form.is_valid():
         return form.invalid()    
@@ -163,22 +161,17 @@ def interpret_answers_view(request):
         for chunk in file.chunks():
             destination.write(chunk)
 
-    destination_folder = os.path.join(IMAGES_ANSWERS_FOLDER, file_name.replace('.pdf', ''))
-    os.makedirs(destination_folder)
+    jpg_list_folder = os.path.join(IMAGES_ANSWERS_FOLDER, file_name.replace('.pdf', ''))
+    os.makedirs(jpg_list_folder)
     PDFConverter.convert_to_pdf_massive(
         pdf_path=file_pdf_path, 
-        folder=destination_folder
+        folder=jpg_list_folder
     )
     
-    interpreter = AnswersInterpreter(destination_folder)
+    interpreter = AnswersInterpreter(jpg_list_folder)
     try:
         return interpreter.interpret_answers()
     except Exception as e:
-        print(e)
-        print(e)
-        print(e)
-        print(e)
-        print(e)
         print(e)
     return redirect('render_answers')
     
