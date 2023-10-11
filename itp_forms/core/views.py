@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from itp_forms.core.answers_interpreter import AnswersInterpreter
 from itp_forms.core.config import Config
 import os
+from django.http import FileResponse
 
 from itp_forms.core.forms import AnswersForm, ConfigurationForm, IndexForm
 from itp_forms.core.image_handler import ImageHandler
@@ -145,7 +146,7 @@ def interpret_answers_view(request):
     
     form = AnswersForm(request.POST or None, request.FILES or None)
     if request.method == 'GET':
-        return render(request, 'results_folder_upload_view.html', {'form':form})
+        return render(request, 'results_form_upload_view.html', {'form':form})
     
     if not form.is_valid():
         return form.invalid()    
@@ -160,8 +161,10 @@ def interpret_answers_view(request):
     with open(file_pdf_path, 'wb') as destination:
         for chunk in file.chunks():
             destination.write(chunk)
+    
 
     jpg_list_folder = os.path.join(IMAGES_ANSWERS_FOLDER, file_name.replace('.pdf', ''))
+    Config.instance().result_forms_path = jpg_list_folder
     os.makedirs(jpg_list_folder)
     PDFConverter.convert_to_pdf_massive(
         pdf_path=file_pdf_path, 
@@ -181,4 +184,16 @@ def save_current_config(request):
     create_initial_files()
     Config.instance().to_json(os.path.join(settings.BASE_DIR, 'utils','configs'))
     return JsonResponse({})
+
+def results_view(request):
+    if Config.is_empty():
+        return redirect('index')   
     
+    return render(request, 'final_results.html',
+                   {'pages_infos':Config.instance().question_results})
+
+def get_result(self):
+    return FileResponse(open(Config.instance().results_path, 'rb'))
+
+def get_form(self, page):
+    return FileResponse(open(os.path.join(Config.instance().result_forms_path, f'p{page}.jpeg'), 'rb'))

@@ -26,7 +26,7 @@ class AnswersInterpreter:
         self.ws = self.wb.active
         self.ws.title = f"Exportação de do formulário {os.path.basename(self.answers_folder)}"
         self.set_initial_ws_layout()
-        self.wb.save("media/07_xlsx_answers_folder/asd.xlsx")
+        self.information = {}
     
     def set_initial_ws_layout(self):
         self.ws["A1"] = "Questão"
@@ -46,20 +46,19 @@ class AnswersInterpreter:
         for thread in threads:
             thread.join()
 
-        self.wb.save(os.path.join(XLSX_ANSWERS_FOLDER, f'{os.path.basename(self.answers_folder)}.xlsx'))
-        return redirect("render_answers")
+        results_path = os.path.join(XLSX_ANSWERS_FOLDER, f'{os.path.basename(self.answers_folder)}.xlsx')
+        self.wb.save(results_path)
+        Config.instance().results_path = results_path
+        Config.instance().question_results = self.information
+        return redirect("results_view")
         
     def interpret_page(self, file, ws_row_index):  
+
         """
             1 : A
             2: B C
             3: 0 -- Rrepresenta que não há certeza da leitura feita
-        """ 
-
-        info = {
-            'filled_questions':{},
-            'doubt_questions':{}        
-        }
+        """         
         
         handler = ImageHandler(base_image_path=file)
         image = handler.cropp_image()
@@ -78,7 +77,7 @@ class AnswersInterpreter:
         cell_size_x_px = config.cell_size_x_px * x_axis_reason
         cell_size_y_px = config.cell_size_y_px * y_axis_reason
         
-        mean_cells_color = []
+        groupings = []
 
         highest_mean_color = 0
         lowest_mean_color = 999
@@ -115,24 +114,26 @@ class AnswersInterpreter:
                         (0, 255, 0), 2
                     )
                 grouping.append(row_cells)  
-            mean_cells_color.append(grouping)          
+            groupings.append(grouping)          
         
-        if mean_cells_color:
+        if groupings:
+            info = {}
+
             color_diff = highest_mean_color - lowest_mean_color
 
             max_filled_cell_color = int(lowest_mean_color + ((1 - config.fill_precentage_to_consider_filled/100)*color_diff))
             max_doubtful_cell_color = int(lowest_mean_color + ((1- config.fill_precentage_to_consider_doubtful/100)*color_diff))
 
-            for grouping in mean_cells_color:
+            for grouping in groupings:
                 for row_idx, row in enumerate(grouping):
-                    info['filled_questions'][row_idx+1] = ''
-                    info['doubt_questions'][row_idx+1] = ''
                     ws_cell = self.ws[f"{ALPHABET[row_idx+1]}{ws_row_index+1}"]
                     ws_cell.value = ''
                     for col_idx, col in enumerate(row):
                         if col <= max_filled_cell_color:
-                            info['filled_questions'][row_idx+1] += f' {ALPHABET[col_idx]}'
                             ws_cell.value = ws_cell.value + f' {ALPHABET[col_idx]}'
                         elif col <= max_doubtful_cell_color:
-                            info['doubt_questions'][row_idx+1] += f' {ALPHABET[col_idx]}'
-    
+                            if row_idx+1 in info:
+                                info[row_idx+1].append(ALPHABET[col_idx]) 
+                            else:
+                                info[row_idx+1] = [ALPHABET[col_idx]]
+            self.information[ws_row_index] = info

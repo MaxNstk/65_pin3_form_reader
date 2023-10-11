@@ -37,6 +37,10 @@ class Config:
     grouping_4_x1:int = None
     grouping_4_y1:int = None
 
+    question_results = {}
+    results_path = ''
+    result_forms_path = ''
+
     fill_precentage_to_consider_filled = 70
     fill_precentage_to_consider_doubtful = 50
 
