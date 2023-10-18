@@ -49,6 +49,11 @@ class ImageHandler:
         self.y_axis_distortion_px = self.markers.marker_a.y_center - self.markers.marker_b.y_center
 
     def get_correct_positions(self, x,y):
+        """ esse método corrige uma possível inclinação da folha. Pega o valor da diferença entre os a coordenada dos dois marcadores,
+            multiplica pela "parte" que esse x corresponde de toda inclinação (supoe-se que a diferença entre os marcadores seja 100%,
+            a coordenada está em algum ponto no meio disso, fazemos uma regra de 3 para saber o quão inclinada esse ponto está em comparação com o todo)
+            e soma-se essa correção ao valor original. Para funcionar, o base deve ter os marcadores corretamente alinhados
+        """
         correct_x = x + ((1-((self.y_axis_cropped_area_size - y) / self.y_axis_cropped_area_size)) * self.x_axis_distortion_px)
         correct_y = y + ((1-((self.x_axis_cropped_area_size - x) / self.x_axis_cropped_area_size)) * self.y_axis_distortion_px)
         return correct_x, correct_y
@@ -167,10 +172,10 @@ class ImageHandler:
         rotated_image = cv2.warpAffine(self.cropped_image, rotation_matrix, self.cropped_image.shape[1::-1], flags=cv2.INTER_LINEAR)
 
         # Display or save the rotated image
-        # cv2.imwrite(f"media/teste/{time.strftime('%Y%m%d-%H%M%S')}.jpg",rotated_image)
-        # cv2.imshow('Rotated Image', rotated_image)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        cv2.imwrite(f"media/teste/{time.strftime('%Y%m%d-%H%M%S')}.jpg",rotated_image)
+        cv2.imshow('Rotated Image', rotated_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
         # If you want to save the rotated image
         # cv2.imwrite('rotated_image.jpg', rotated_image)

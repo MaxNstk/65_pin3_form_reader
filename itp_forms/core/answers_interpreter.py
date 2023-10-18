@@ -119,9 +119,10 @@ class AnswersInterpreter:
 
             color_diff = highest_mean_color - lowest_mean_color
 
+            # toma como base a celula mais preenchida como 100% e a menos preenchida como 0% e assim define o necessário
             max_filled_cell_color = int(lowest_mean_color + ((1 - config.fill_precentage_to_consider_filled/100)*color_diff))
             max_doubtful_cell_color = int(lowest_mean_color + ((1- config.fill_precentage_to_consider_doubtful/100)*color_diff))
-
+            
             for grouping in groupings:
                 for row_idx, row in enumerate(grouping):
                     ws_cell = self.ws[f"{ALPHABET[row_idx+1]}{ws_row_index+1}"]
@@ -135,7 +136,7 @@ class AnswersInterpreter:
                             else:
                                 info[row_idx+1] = [ALPHABET[col_idx]]
             self.information[ws_row_index] = info
-            
-            cv2.imshow("Image with ROI", image)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows() 
+
+            # cv2.imshow("Image with ROI", image)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows() 
