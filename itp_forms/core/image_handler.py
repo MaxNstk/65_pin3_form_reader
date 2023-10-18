@@ -20,6 +20,9 @@ class ImageHandler:
 
     cropped_image: np.ndarray = None
 
+    x_axis_distortion_px: int = 0
+    y_axis_distortion_px: int = 0
+
     key_mapping = {
             'enter': 13,
             'esc': 27,
@@ -37,6 +40,18 @@ class ImageHandler:
     def set_images_info(self):        
         template_height, template_width, _ = self.template.shape
         self.match_radius = max(template_height, template_width)//4
+        self.set_markers()
+
+        self.x_axis_cropped_area_size = self.markers.marker_a.x_center - self.markers.marker_b.x_center
+        self.y_axis_cropped_area_size = self.markers.marker_a.y_center - self.markers.marker_c.y_center
+
+        self.x_axis_distortion_px = self.markers.marker_a.x_center - self.markers.marker_c.x_center
+        self.y_axis_distortion_px = self.markers.marker_a.y_center - self.markers.marker_b.y_center
+
+    def get_correct_positions(self, x,y):
+        correct_x = x + ((1-((self.y_axis_cropped_area_size - y) / self.y_axis_cropped_area_size)) * self.x_axis_distortion_px)
+        correct_y = y + ((1-((self.x_axis_cropped_area_size - x) / self.x_axis_cropped_area_size)) * self.y_axis_distortion_px)
+        return correct_x, correct_y
     
     def set_markers(self):
         # get correlation surface from template matching
@@ -152,10 +167,10 @@ class ImageHandler:
         rotated_image = cv2.warpAffine(self.cropped_image, rotation_matrix, self.cropped_image.shape[1::-1], flags=cv2.INTER_LINEAR)
 
         # Display or save the rotated image
-        cv2.imwrite(f"media/teste/{time.strftime('%Y%m%d-%H%M%S')}.jpg",rotated_image)
-        cv2.imshow('Rotated Image', rotated_image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # cv2.imwrite(f"media/teste/{time.strftime('%Y%m%d-%H%M%S')}.jpg",rotated_image)
+        # cv2.imshow('Rotated Image', rotated_image)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
         # If you want to save the rotated image
         # cv2.imwrite('rotated_image.jpg', rotated_image)

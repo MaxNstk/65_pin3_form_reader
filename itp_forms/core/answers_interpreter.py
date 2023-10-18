@@ -54,13 +54,7 @@ class AnswersInterpreter:
         Config.instance().question_results = self.information
         return redirect("results_view")
         
-    def interpret_page(self, file, ws_row_index):  
-
-        """
-            1 : A
-            2: B C
-            3: 0 -- Rrepresenta que não há certeza da leitura feita
-        """         
+    def interpret_page(self, file, ws_row_index):     
         
         handler = ImageHandler(base_image_path=file)
         image = handler.cropp_image()
@@ -98,8 +92,10 @@ class AnswersInterpreter:
                 row_cells = []
 
                 for column in range(config.column_amount):
-                    x1 = (getattr(config,f'grouping_{i}_x1') * x_axis_reason) + ((cell_size_x_px + x_space_between_cells) * column)                
+                    # posição no modelo x a razão da escala + (tamanho da celula e o espaço entre elas * coluna ou linha)
+                    x1 = (getattr(config,f'grouping_{i}_x1') * x_axis_reason) + ((cell_size_x_px + x_space_between_cells) * column)
                     y1 = (getattr(config,f'grouping_{i}_y1') * y_axis_reason) + ((cell_size_y_px + y_space_between_cells) * row)
+                    x1, y1 = handler.get_correct_positions(x1, y1)
                     cell = image[int(y1):int(y1+cell_size_y_px), int(x1):int(x1+cell_size_x_px)]
                     mean_color = cv2.mean(cell)[0]
 
@@ -139,3 +135,7 @@ class AnswersInterpreter:
                             else:
                                 info[row_idx+1] = [ALPHABET[col_idx]]
             self.information[ws_row_index] = info
+            
+            cv2.imshow("Image with ROI", image)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows() 
