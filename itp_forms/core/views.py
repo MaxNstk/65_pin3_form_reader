@@ -94,14 +94,21 @@ class BaseConfigurationView(TemplateView):
         ctx['form'] = ConfigurationForm(self.request.POST or None)
         return ctx
 
-def set_marker(request,image_name):
+def set_marker(request,image_name,marker_id):
     create_initial_files()
     handler = ImageHandler(cropped_image_path=os.path.join(CROPPED_IMAGES_FOLDER, image_name))
     handler.save_cropped_image(path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
-    positions = handler.configure_initial_positions(path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
-    Config.reset()
-    Config.instance().set_template_size(template_path=os.path.join(CROPPED_IMAGES_FOLDER, image_name))
-    Config.instance().set_initial_marker(positions)
+
+    if marker_id == 1:
+        Config.reset()
+        positions = handler.configure_initial_positions(path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
+        Config.instance().set_template_size(template_path=os.path.join(CROPPED_IMAGES_FOLDER, image_name))
+        Config.instance().set_initial_marker(positions)
+    else:
+        positions = handler.configure_positions(path=os.path.join(EDITED_IMAGES_FOLDER, image_name))
+        setattr(Config.instance(),f'grouping_{marker_id}_x1', positions[0]) 
+        setattr(Config.instance(),f'grouping_{marker_id}_y1', positions[1]) 
+        
     Config.instance().draw_positions(os.path.join(EDITED_IMAGES_FOLDER, image_name))
     
     if positions:

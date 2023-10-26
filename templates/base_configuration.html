@@ -42,10 +42,18 @@
     const reloadButton = document.getElementById('btn-update-image');
     const UpdateInfoButton = document.getElementById('btn-update-info');
 
-    const configureFirstCellButton = document.getElementById('bt-set-grouping-1');
-    const configureSecondCellButton = document.getElementById('bt-set-grouping-2');
-    const configureThirdCellButton = document.getElementById('bt-set-grouping-3');
-    const configureFourthCellButton = document.getElementById('bt-set-grouping-2');
+    document.getElementById('bt-set-grouping-1').addEventListener('click', () => {
+        setMarker(1);
+    });
+    document.getElementById('bt-set-grouping-2').addEventListener('click', () => {
+        setMarker(2);
+    });
+    document.getElementById('bt-set-grouping-3').addEventListener('click', () => {
+        setMarker(3);
+    });
+    document.getElementById('bt-set-grouping-4').addEventListener('click', () => {
+        setMarker(4);
+    });
 
     $('#id_column_amount').on('input', function() {
         UpdateImage();
@@ -61,10 +69,6 @@
     })
 
     const imageElement = document.getElementById('image');
-    
-    configureFirstCellButton.addEventListener('click', () => {
-        setInitialMarker();
-    });
 
     reloadButton.addEventListener('click', () => {
         realodImage();
@@ -74,9 +78,9 @@
         UpdateImage();
     });
 
-    async function setInitialMarker(){
+    async function setMarker(markerId){
         try {
-            const response = await axios.get("/set_marker/{{image_name}}",{
+            const response = await axios.get(`/set_marker/{{image_name}}/${markerId}`,{
                 method: 'get',
             })
         } catch (e) {

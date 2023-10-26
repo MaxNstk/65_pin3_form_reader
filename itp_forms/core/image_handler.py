@@ -146,36 +146,39 @@ class ImageHandler:
         y1, y2 = (start_y, end_y) if start_y < end_y else (end_y, start_y)
         return x1, y1, x2, y2
 
-    def save_cropped_image(self, path):
-        cv2.imwrite(path, self.cropped_image)
     
-    def read_answers(answers_path: str):
-        return
-    
-    def rotate_image(self):
 
-        # Define the two points in pixel coordinates
-        point1 = self.markers.marker_a.get_center_coordinates()
-        point2 = self.markers.marker_c.get_center_coordinates()
+    def configure_positions(self, path=None):
+        image = self.cropped_image
+        if path:
+            image = cv2.imread(path)
+        cv2.imshow('Select initial point', image)
 
-        # Calculate the angle of rotation to align the points in the y-axis
-        dy = point2[1] - point1[1]
-        angle = np.arctan2(dy, abs(point2[0] - point1[0]))  # Calculate the angle in radians
+        x, y = -1, -1
 
-        # Get the image center point (assumes it's the center)
-        image_center = tuple(np.array(self.cropped_image.shape[1::-1]) / 2)
+        def select_point(event, current_x, current_y, flags, param):
+            nonlocal x, y
 
-        # Create a rotation matrix
-        rotation_matrix = cv2.getRotationMatrix2D(image_center, np.degrees(angle), scale=1)
+            if event == cv2.EVENT_LBUTTONDOWN:
+                image_copy = image.copy()
+                x, y = current_x, current_y
+                cv2.circle(image_copy, (x, y), 5, (0, 255, 0), -1)
+                cv2.imshow('Select initial point', image_copy)
 
-        # Apply the rotation to the image
-        rotated_image = cv2.warpAffine(self.cropped_image, rotation_matrix, self.cropped_image.shape[1::-1], flags=cv2.INTER_LINEAR)
+        cv2.setMouseCallback('Select initial point', select_point)
 
-        # Display or save the rotated image
-        cv2.imwrite(f"media/teste/{time.strftime('%Y%m%d-%H%M%S')}.jpg",rotated_image)
-        cv2.imshow('Rotated Image', rotated_image)
-        cv2.waitKey(0)
+        while True:
+            key = cv2.waitKey(1) & 0xFF
+
+            if key == self.key_mapping['enter']:
+                break
+
+            elif key == self.key_mapping['esc']:
+                break
+
         cv2.destroyAllWindows()
 
-        # If you want to save the rotated image
-        # cv2.imwrite('rotated_image.jpg', rotated_image)
+        return x, y
+    
+    def save_cropped_image(self, path):
+        cv2.imwrite(path, self.cropped_image)   

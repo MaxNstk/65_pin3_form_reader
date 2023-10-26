@@ -123,20 +123,22 @@ class AnswersInterpreter:
             max_filled_cell_color = int(lowest_mean_color + ((1 - config.fill_precentage_to_consider_filled/100)*color_diff))
             max_doubtful_cell_color = int(lowest_mean_color + ((1- config.fill_precentage_to_consider_doubtful/100)*color_diff))
             
+            cureent_question = 0
             for grouping in groupings:
-                for row_idx, row in enumerate(grouping):
-                    ws_cell = self.ws[f"{ALPHABET[row_idx+1]}{ws_row_index+1}"]
+                for row in grouping:
+                    cureent_question += 1
+                    ws_cell = self.ws[f"{ALPHABET[cureent_question]}{ws_row_index+1}"]
                     ws_cell.value = ''
                     for col_idx, col in enumerate(row):
                         if col <= max_filled_cell_color:
                             ws_cell.value = ws_cell.value + f' {ALPHABET[col_idx]}'
                         elif col <= max_doubtful_cell_color:
-                            if row_idx+1 in info:
-                                info[row_idx+1].append(ALPHABET[col_idx]) 
+                            if cureent_question in info:
+                                info[cureent_question].append(ALPHABET[col_idx]) 
                             else:
-                                info[row_idx+1] = [ALPHABET[col_idx]]
+                                info[cureent_question] = [ALPHABET[col_idx]]
             self.information[ws_row_index] = info
 
-            # cv2.imshow("Image with ROI", image)
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows() 
+            cv2.imshow("Image with ROI", image)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows() 

@@ -17,7 +17,6 @@ class FormHelperForm(forms.Form):
         if self.add_submit:
             self.helper.add_input(Submit('submit', 'Enviar'))
 
-
 class IndexForm(FormHelperForm):
 
     form_tag = True
@@ -87,7 +86,7 @@ class ConfigurationForm(FormHelperForm):
                 Div(
                     Div(
                         Div(Field('fourth_group_row_amount', placeholder='Quantidade de linhas'),css_class='col-lg-12'),
-                        Div(Button('Limpar', 'Definir célula inicial', css_class='btn btn-primary w-100', css_id='bt-set-grouping-2'),css_class='col-lg-12'),
+                        Div(Button('Limpar', 'Definir célula inicial', css_class='btn btn-primary w-100', css_id='bt-set-grouping-4'),css_class='col-lg-12'),
                         css_class='row'
                     ),
                 css_class="card-body"),
