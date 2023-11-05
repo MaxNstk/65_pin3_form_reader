@@ -13,7 +13,12 @@
     <div class="container-fluid full-height">
         <div class="row full-height">
             <div class="col-md-8">
-                <img id="image" src="{{ image_path }}" alt="My Image" style="max-width: 100%; max-height: 100%; width: auto; height: auto;">
+                <div class="col-lg-12">
+                    <img id="image" src="{{ image_path }}" alt="My Image" style="max-width: 100%; max-height: 100%; width: auto; height: auto;">
+                </div>    
+                <a href="{% url 'render_answers' %}" onclick="saveConfig()" class="btn btn-primary col-lg-12">
+                    Salvar Configuração e prosseguir
+                </a>
             </div>    
             <div class="col-md-4">
                 <div class="container">
@@ -25,12 +30,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class='row'>
-            <a href="{% url 'render_answers' %}"><button onclick="saveConfig()" class='btn btn-primary col-lg-12'>
-                Salvar Configuração e prosseguir
-            </button>
-            </a>
         </div>
     </div>
 {% endblock %}
