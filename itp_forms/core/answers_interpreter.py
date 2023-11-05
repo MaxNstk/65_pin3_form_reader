@@ -139,6 +139,6 @@ class AnswersInterpreter:
                                 info[cureent_question] = [ALPHABET[col_idx]]
             self.information[ws_row_index] = info
 
-            cv2.imshow("Image with ROI", image)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows() 
+            # cv2.imshow("Image with ROI", image)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows() 

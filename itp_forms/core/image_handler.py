@@ -97,7 +97,7 @@ class ImageHandler:
         image = self.cropped_image
         if path:
             image = cv2.imread(path)
-        cv2.imshow('Selecionar célular inicial', image)
+        cv2.imshow('Defina a celula inicial', image)
 
         start_x, start_y, end_x, end_y = -1, -1, -1, -1
 
@@ -119,7 +119,7 @@ class ImageHandler:
                 end_x, end_y = x, y
 
 
-        cv2.setMouseCallback('Selecionar célular inicial', select_shape)
+        cv2.setMouseCallback('Defina a celula inicial', select_shape)
 
         while True:
             clone = image.copy()
@@ -127,7 +127,7 @@ class ImageHandler:
             if start_x != -1:
                 cv2.rectangle(clone, (start_x, start_y), (end_x, end_y), (0, 255, 0), 2)
 
-            cv2.imshow('Selecionar célular inicial', clone)
+            cv2.imshow('Defina a celula inicial', clone)
             key = cv2.waitKey(1) & 0xFF
 
             # Check for Enter key

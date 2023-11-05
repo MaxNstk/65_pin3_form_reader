@@ -16,6 +16,6 @@ class PDFConverter:
     
     @staticmethod
     def convert_to_pdf_massive(pdf_path:str, folder:str):
-        images = convert_from_path(pdf_path, poppler_path= os.path.join('poppler-23.08.0','Library','bin'))
+        images = convert_from_path(pdf_path)
         for idx, image in enumerate(images, 1):
             image.save(os.path.join(folder,f'p{idx}.jpeg'), 'JPEG')
