@@ -193,11 +193,14 @@ def save_current_config(request):
     return JsonResponse({})
 
 def results_view(request):
+    """ View que renderiza os resultados"""
     if Config.is_empty():
         return redirect('index')   
     
-    return render(request, 'final_results.html',
-                   {'pages_infos':Config.instance().question_results})
+    # manda as questões ordenadas por contexto
+    return render(request, 'final_results.html', {'pages_infos': 
+            dict(sorted(Config.instance().question_results.items()))
+        })
 
 def get_result(self):
     return FileResponse(open(Config.instance().results_path, 'rb'))
