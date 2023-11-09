@@ -20,6 +20,7 @@ class Marker:
         self.set_postitions(template)
     
     def set_postitions(self, template):
+        """ define as posições inicial e final do marcador"""
         template_height, template_width, _ = template.shape
 
         self.x2 = self.x1 + template_width
@@ -29,9 +30,11 @@ class Marker:
         self.y_center = int((self.y1 + self.y2) / 2)
     
     def highlight(self,img, color=(0,0,255)):
+        """ desenha um retangulo ao redor de mim mesmo """
         cv2.rectangle(img, (self.x1,self.y1), (self.x2,self.y2), color, 2)
     
     def get_center_coordinates(self):
+        """ retorna as coordenadas centrais """
         return self.x_center, self.y_center
     
     # def draw_circle()

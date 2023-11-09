@@ -218,3 +218,8 @@ def get_result(self):
 def get_form(self, page):
     """ Retorna uma das páginas das questões duvidosas """
     return FileResponse(open(os.path.join(Config.instance().result_forms_path, f'p{page}.jpeg'), 'rb'))
+
+def get_interpreted_form(self, page):
+    """ Retorna a leitura da imagem de uma das páginas das questões duvidosas """
+    return FileResponse(open(os.path.join(Config.instance().result_forms_path, f'interpreted_p{page}.jpeg'), 'rb'))
+

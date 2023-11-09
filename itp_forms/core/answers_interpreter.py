@@ -11,6 +11,7 @@ from itp_forms.core.config import Config
 from itp_forms.core.image_handler import ImageHandler
 
 XLSX_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '07_xlsx_answers_folder')
+
 ALPHABET = ('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R',
             'S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI',
             'AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY',
@@ -139,6 +140,8 @@ class AnswersInterpreter:
                                 info[cureent_question] = [ALPHABET[col_idx]]
             self.information[ws_row_index] = info
 
+            handler.save_cropped_image(os.path.join(self.answers_folder, f'interpreted_p{ws_row_index}.jpeg '))
+            
             # cv2.imshow("Image with ROI", image)
             # cv2.waitKey(0)
             # cv2.destroyAllWindows() 

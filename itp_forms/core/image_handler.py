@@ -105,7 +105,7 @@ class ImageHandler:
     
 
     def configure_initial_positions(self,path=None):
-        """ configura as posições do marcador incial, responável por abrir a janela do openCV
+        """ configura as posições do agrupamento incial, responável por abrir a janela do openCV
             e gerenciar os cliques para desenhar o retangulo e capturar as cordenadas
         """
         image = self.cropped_image
@@ -155,7 +155,7 @@ class ImageHandler:
             elif key == self.key_mapping['esc']:
                 break
             
-        cv2.destroyAllWindows()  # Close the OpenCV window
+        cv2.destroyAllWindows()
         x1, x2 = (start_x, end_x) if start_x < end_x else (end_x, start_x)
         y1, y2 = (start_y, end_y) if start_y < end_y else (end_y, start_y)
         return x1, y1, x2, y2
@@ -163,10 +163,13 @@ class ImageHandler:
     
 
     def configure_positions(self, path=None):
+        """ configura as posições dos agrupamentos eceto do primeiro
+            ao inves de desenhar o retangulo, captura somente uma coordenada, superior a direita
+        """
         image = self.cropped_image
         if path:
             image = cv2.imread(path)
-        cv2.imshow('Select initial point', image)
+        cv2.imshow('Selecione a posicao inicial do agrupamento desejado', image)
 
         x, y = -1, -1
 
@@ -177,9 +180,9 @@ class ImageHandler:
                 image_copy = image.copy()
                 x, y = current_x, current_y
                 cv2.circle(image_copy, (x, y), 5, (0, 255, 0), -1)
-                cv2.imshow('Select initial point', image_copy)
+                cv2.imshow('Selecione a posicao inicial do agrupamento desejado', image_copy)
 
-        cv2.setMouseCallback('Select initial point', select_point)
+        cv2.setMouseCallback('Selecione a posicao inicial do agrupamento desejado', select_point)
 
         while True:
             key = cv2.waitKey(1) & 0xFF
@@ -195,4 +198,5 @@ class ImageHandler:
         return x, y
     
     def save_cropped_image(self, path):
+        """ salva a imagem cortada em um path """
         cv2.imwrite(path, self.cropped_image)   
