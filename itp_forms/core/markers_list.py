@@ -7,6 +7,10 @@ from itp_forms.core.marker import Marker
 
 class MarkerList:
 
+    """ Lista de marcadores, armazena os 4 marcadores presentes na imagem
+        utilizamos eles para facilitar o manuseio das localizações e suas relações
+    """
+
     markers:list
 
     marker_a: Marker # esquerda acima
@@ -21,11 +25,11 @@ class MarkerList:
         self.markers = []
 
     def set_markers(self):
+        """ Define através de todos marcadores, qual corresponde a qual posição na imagem"""
         sorted_y_markers = sorted(self.markers, key=lambda marker: marker.y_center)
         self.marker_a, self.marker_b = sorted(sorted_y_markers[:2], key=lambda marker: marker.x_center)
         self.marker_c, self.marker_d = sorted(sorted_y_markers[2:], key=lambda marker: marker.x_center)
 
-    # todo fazer 4 atributos um para cada marker
     def add(self, marker:Marker):
         self.markers.append(marker)
         if self.length() == 4:

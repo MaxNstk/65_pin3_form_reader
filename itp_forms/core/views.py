@@ -25,7 +25,7 @@ PDF_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '05_pdf_answers_folder')
 IMAGES_ANSWERS_FOLDER = os.path.join(settings.MEDIA_ROOT, '06_images_answers_folder')
 
 def create_initial_files():
-
+    """ Cria a estrutura de pastas necessárias caso seja necessário """
     if not os.path.exists(UPLOAD_PDF_FOLDER):
         os.makedirs(UPLOAD_PDF_FOLDER)
     if not os.path.exists(PARSED_IMAGES_FOLDER):
@@ -41,6 +41,10 @@ def create_initial_files():
 
 
 class IndexView(TemplateView):
+
+    """ Tela inicial, renderiza um form que receberá ou o formulário base ou um arquivo de configuração 
+        Feita anterioremente
+    """
 
     template_name = "index.html"
 
@@ -58,23 +62,28 @@ class IndexView(TemplateView):
         if not form.is_valid():
             return redirect('index')     
         
+        # verificamos se tem alguma config, caso contrário renderiza a tela de configuração
         if form.cleaned_data.get('json_config_upload'):
             Config.from_json(form.cleaned_data.get('json_config_upload'))
             return redirect('render_answers')
+        
+        # captura o pdf enviado
         file = form.cleaned_data['base_form_upload']
         file_name = f"{time.strftime('%Y%m%d-%H%M%S')}_{file.name}"
         file_pdf_path = os.path.join(UPLOAD_PDF_FOLDER, file_name)
 
+        # salva ele na pasta designada
         with open(file_pdf_path, 'wb') as destination:
             for chunk in file.chunks():
                 destination.write(chunk)
-                
+
+        # transforma o pdf em uma imagem
         file_jpeg_name = file_name.replace('.pdf','.jpg')
         file_jpeg_path = os.path.join(PARSED_IMAGES_FOLDER, file_jpeg_name)
-
         PDFConverter.convert_to_jpg(pdf_path=file_pdf_path, 
                             result_path=file_jpeg_path)
 
+        # Cria uma instancia do handler que será responsável por lidar com a imagem
         handler = ImageHandler(base_image_path=file_jpeg_path)
         handler.cropp_image()
         handler.save_cropped_image(os.path.join(CROPPED_IMAGES_FOLDER, file_jpeg_name))
@@ -177,7 +186,6 @@ def interpret_answers_view(request):
         pdf_path=file_pdf_path, 
         folder=jpg_list_folder
     )
-    
     interpreter = AnswersInterpreter(jpg_list_folder)
     try:
         return interpreter.interpret_answers()
@@ -188,6 +196,7 @@ def interpret_answers_view(request):
 
 @csrf_exempt
 def save_current_config(request):
+    """ Pega a instância da config atual e salva nas configurações do sistema"""
     create_initial_files()
     Config.instance().to_json(os.path.join(settings.BASE_DIR, 'utils','configs'))
     return JsonResponse({})
@@ -203,7 +212,9 @@ def results_view(request):
         })
 
 def get_result(self):
+    """ Retorna o resultado final em xlsx """
     return FileResponse(open(Config.instance().results_path, 'rb'))
 
 def get_form(self, page):
+    """ Retorna uma das páginas das questões duvidosas """
     return FileResponse(open(os.path.join(Config.instance().result_forms_path, f'p{page}.jpeg'), 'rb'))

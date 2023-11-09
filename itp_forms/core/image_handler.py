@@ -10,6 +10,10 @@ from itp_forms.core.markers_list import MarkerList
 
 class ImageHandler:
 
+    """ Classe utilitária responsável por manipular imagens
+        identificando marcadores, cortando elas, capturando informações...
+    """
+
     base_image: np.ndarray
     template: np.ndarray
 
@@ -37,7 +41,8 @@ class ImageHandler:
             self.template = cv2.imread(template_path)
             self.set_images_info()
 
-    def set_images_info(self):        
+    def set_images_info(self):   
+        """ Seta informações necessárias para fazer operações com a imagem"""     
         template_height, template_width, _ = self.template.shape
         self.match_radius = max(template_height, template_width)//4
         self.set_markers()
@@ -59,20 +64,25 @@ class ImageHandler:
         return correct_x, correct_y
     
     def set_markers(self):
-        # get correlation surface from template matching
+        """ Define os marcadores da imagem"""
+
+        # utilizamos a tecina de matchTemplate, em que procuramos os marcadores pré definidos
         correlation_img = cv2.matchTemplate(self.base_image,self.template,cv2.TM_SQDIFF_NORMED)
 
-        # get locations of all peaks higher than match_thresh for up to num_matches
         corrcopy = correlation_img.copy()
 
         self.markers = MarkerList(self.template)
+        # percorre as localizações em que houve a maior "correspondencia entre as imagens"
         for i in range(0, self.markers_amount):      
             # get max value and location of max
             _, max_val, _, max_loc = cv2.minMaxLoc(corrcopy)
 
+            # se o valor de correspondencia (percentual) for maior que o match_thresh (arbitrariamente dfinido como 0,95), 
+            # interpretamos que se trata de um marcador
             if max_val > self.match_thresh:
                 marker = Marker(max_loc[0],max_loc[1], self.template)
                 self.markers.add(marker)  
+                # desenhamos um círculo ao redor do marcador
                 cv2.circle(corrcopy, (marker.x1,marker.y1), self.match_radius, 0, -1)
                 i = i + 1               
             else:
@@ -82,6 +92,7 @@ class ImageHandler:
             raise Exception(f"Número de marcadores detectados difere de 4: {self.markers.length()} encontrados")
 
     def cropp_image(self):
+        """ corta a imagem através da localização dos marcadores"""
         if not self.cropped_image:
             self.set_markers()
 
@@ -94,6 +105,9 @@ class ImageHandler:
     
 
     def configure_initial_positions(self,path=None):
+        """ configura as posições do marcador incial, responável por abrir a janela do openCV
+            e gerenciar os cliques para desenhar o retangulo e capturar as cordenadas
+        """
         image = self.cropped_image
         if path:
             image = cv2.imread(path)
@@ -104,6 +118,7 @@ class ImageHandler:
         drawing = False
 
         def select_shape(event, x, y, flags, param):
+            """ define as posições conforme o clique do usuário"""
             nonlocal start_x, start_y, end_x, end_y, drawing
 
             if event == cv2.EVENT_LBUTTONDOWN:
@@ -124,20 +139,19 @@ class ImageHandler:
         while True:
             clone = image.copy()
 
+            #desenha um retangulo nas posições definidas
             if start_x != -1:
                 cv2.rectangle(clone, (start_x, start_y), (end_x, end_y), (0, 255, 0), 2)
 
             cv2.imshow('Defina a celula inicial', clone)
             key = cv2.waitKey(1) & 0xFF
 
-            # Check for Enter key
+            # Ao pressionar enter salva
             if key == self.key_mapping['enter']:
                 cv2.rectangle(image, (start_x, start_y), (end_x, end_y), (0, 255, 0), 2)
-                # if path:
-                #     cv2.imwrite(path, image)
                 break
 
-            # Check for Esc key
+            # Ao pressionar esc sai
             elif key == self.key_mapping['esc']:
                 break
             

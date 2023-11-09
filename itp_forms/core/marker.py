@@ -4,6 +4,8 @@ import numpy as np
 
 
 class Marker:
+
+    """ Represente um marcador presente na imagem """
     
     x1: int
     x2: int
