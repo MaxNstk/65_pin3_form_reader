@@ -1,6 +1,7 @@
 import os
 from pdf2image import convert_from_path
 from django.conf import settings
+import platform
 
 
 class PDFConverter:
@@ -10,7 +11,10 @@ class PDFConverter:
     @staticmethod
     def convert_to_jpg(pdf_path:str, result_path:str):
         """ Converte um arquivo unico """
-        images = convert_from_path(pdf_path, poppler_path=os.path.join('poppler-23.08.0','Library','bin'))
+        if platform.system() == 'Windows':
+            images = convert_from_path(pdf_path, poppler_path=os.path.join('poppler-23.08.0','Library','bin'))
+        else:
+            images = convert_from_path(pdf_path)
         if len(images) != 1:
             raise Exception(f"O pdf base precisa possuir apenas 1 página! Quantidade atual: {len(images)}")
         images[0].save(result_path, 'JPEG')
