@@ -59,12 +59,9 @@ class AnswersInterpreter:
         
         handler = ImageHandler(base_image_path=file)
         image = handler.cropp_image()
-        # handler.rotate_image()
 
         image_height, image_width, _ = image.shape
 
-        # todo mudar 
-        # config = Config.from_json(open('utils/configs/20231004-194329_config.json', '+a'))
         config = Config.instance()
         x_axis_reason, y_axis_reason = config.get_multiply_reason(image_height, image_width)
 
