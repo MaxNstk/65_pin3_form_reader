@@ -1,0 +1,12 @@
+Para executar a aplicação é necessário instalar as dependências. Para isso existem dois executáveis:
+1. PrimeiraVezWindows.bat
+2. PrimeiraVezLinux.sh
+
+Execute o comando referente ao seu SO. 
+Esses comandos devem ser executádos com privilégios de administrador e com internet.
+Após a execução desses, é possível executar a aplicação sem internet, executando os comandos:
+
+1. ITPFormsWindows.bat
+2. ITPFormsLinux.sh
+
+Sobre o projeto.
