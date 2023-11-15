@@ -133,8 +133,8 @@ class ImageHandler:
         # return im_with_keypoints, keypoints
 
         # Save the image with keypoints for review
-        output_image_path = f"testes/{time.strftime('%Y%m%d-%H%M%S')}.jpeg"
-        cv2.imwrite(output_image_path, im_with_keypoints)
+        # output_image_path = f"testes/{time.strftime('%Y%m%d-%H%M%S')}.jpeg"
+        # cv2.imwrite(output_image_path, im_with_keypoints)
 
     def cropp_image(self):
         """ corta a imagem através da localização dos marcadores"""
