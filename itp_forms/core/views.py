@@ -101,6 +101,7 @@ class BaseConfigurationView(TemplateView):
         ctx['image_name'] = kwargs['image_name']
         ctx['image_path'] = os.path.join(settings.MEDIA_URL, '04_edited_cropped_images', kwargs['image_name'])
         ctx['form'] = ConfigurationForm(self.request.POST or None)
+        Config.reset()
         return ctx
 
 def set_marker(request,image_name,marker_id):

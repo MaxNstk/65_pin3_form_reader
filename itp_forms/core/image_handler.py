@@ -43,15 +43,15 @@ class ImageHandler:
 
     def set_images_info(self):   
         """ Seta informações necessárias para fazer operações com a imagem"""     
-        template_height, template_width, _ = self.template.shape
-        self.match_radius = max(template_height, template_width)//4
+        # template_height, template_width, _ = self.template.shape
+        # self.match_radius = max(template_height, template_width)//4
         self.set_markers()
 
-        self.x_axis_cropped_area_size = self.markers.marker_a.x_center - self.markers.marker_b.x_center
-        self.y_axis_cropped_area_size = self.markers.marker_a.y_center - self.markers.marker_c.y_center
+        self.x_axis_cropped_area_size = self.markers.marker_b.x_center - self.markers.marker_a.x_center
+        self.y_axis_cropped_area_size = self.markers.marker_c.y_center - self.markers.marker_a.y_center
 
-        self.x_axis_distortion_px = self.markers.marker_a.x_center - self.markers.marker_c.x_center
-        self.y_axis_distortion_px = self.markers.marker_a.y_center - self.markers.marker_b.y_center
+        self.x_axis_distortion_px = self.markers.marker_c.x_center - self.markers.marker_a.x_center
+        self.y_axis_distortion_px = self.markers.marker_b.y_center - self.markers.marker_a.y_center
 
     def get_correct_positions(self, x,y):
         """ esse método corrige uma possível inclinação da folha. Pega o valor da diferença entre os a coordenada dos dois marcadores,
