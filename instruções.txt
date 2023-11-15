@@ -44,4 +44,6 @@ EXISTEM IMPLICAÇÕES PARA O PROJETO FUNCIONAR CORRETAMENTE:
     4. Não renomeie nada dentro da estrutura do projeto, nem pastas nem arquivos, isso pode implicar no não funcionamento dele,
     caso deseje, faça uma cópia para fora da estrutura.
     5. Utilize a estrutura de pastas com os arquivos intermediários a seu favor, é possível indentificar o que estpa acontecendo por meio deles também
+    6. O sistema roda em um servidor web local, portanto crtl+F5 pode ser a solução, bem como reiniciar o processo, 
+    acessando a pagina incial novamente e até mesmo em últimos casos reiniciando o servidor
 
