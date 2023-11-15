@@ -174,7 +174,7 @@ class AnswersInterpreter:
                                 info[cureent_question] = [ALPHABET[col_idx]]
             self.information[ws_row_index] = info
 
-            handler.save_cropped_image(os.path.join(self.answers_folder, f'interpreted_p{ws_row_index}.jpeg '))
+            handler.save_cropped_image(os.path.join(self.answers_folder, f'interpreted_p{ws_row_index}.jpeg'))
             
             # cv2.imshow("Image with ROI", image)
             # cv2.waitKey(0)
