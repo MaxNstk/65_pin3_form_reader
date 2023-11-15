@@ -59,8 +59,8 @@ class ImageHandler:
             a coordenada está em algum ponto no meio disso, fazemos uma regra de 3 para saber o quão inclinada esse ponto está em comparação com o todo)
             e soma-se essa correção ao valor original. Para funcionar, o base deve ter os marcadores corretamente alinhados
         """
-        correct_x = x + ((1-((self.y_axis_cropped_area_size - y) / self.y_axis_cropped_area_size)) * self.x_axis_distortion_px)
-        correct_y = y + ((1-((self.x_axis_cropped_area_size - x) / self.x_axis_cropped_area_size)) * self.y_axis_distortion_px)
+        correct_x = x + ((1-((self.y_axis_cropped_area_size - y) / self.y_axis_cropped_area_size)) * (self.x_axis_distortion_px*2))
+        correct_y = y + ((1-((self.x_axis_cropped_area_size - x) / self.x_axis_cropped_area_size)) * (self.y_axis_distortion_px*2))
         return correct_x, correct_y
     
     # def set_markers(self):
