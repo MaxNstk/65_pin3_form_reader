@@ -38,7 +38,6 @@
     
 <script defer> 
 
-    const reloadButton = document.getElementById('btn-update-image');
     const UpdateInfoButton = document.getElementById('btn-update-info');
 
     document.getElementById('bt-set-grouping-1').addEventListener('click', () => {
@@ -68,10 +67,6 @@
     })
 
     const imageElement = document.getElementById('image');
-
-    reloadButton.addEventListener('click', () => {
-        realodImage();
-    });
 
     UpdateInfoButton.addEventListener('click', () => {
         UpdateImage();
