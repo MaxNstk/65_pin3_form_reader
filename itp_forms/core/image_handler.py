@@ -63,33 +63,78 @@ class ImageHandler:
         correct_y = y + ((1-((self.x_axis_cropped_area_size - x) / self.x_axis_cropped_area_size)) * self.y_axis_distortion_px)
         return correct_x, correct_y
     
+    # def set_markers(self):
+    """ função de detecção de marcadores antiga, que não funciona direito com certos modelos """
+    #     """ Define os marcadores da imagem"""
+
+    #     correlation_img = cv2.matchTemplate(self.base_image,self.template,cv2.TM_SQDIFF_NORMED)
+
+    #     corrcopy = correlation_img.copy()
+
+    #     self.markers = MarkerList(self.template)
+    #     for i in range(0, self.markers_amount):      
+    #         _, max_val, _, max_loc = cv2.minMaxLoc(corrcopy)
+
+    #         if max_val > 0.95:
+    #             marker = Marker(max_loc[0],max_loc[1], self.template)
+    #             self.markers.add(marker)  
+
+    #             cv2.circle(corrcopy, (marker.x1,marker.y1), self.match_radius, 0, -1)
+    #             i = i + 1               
+    #         else:
+    #             break
+
+    #     if self.markers.length() != 4:
+    #         raise Exception(f"Número de marcadores detectados difere de 4: {self.markers.length()} encontrados")
+
+    # Blob detector function with parameters
+
     def set_markers(self):
-        """ Define os marcadores da imagem"""
 
-        # utilizamos a tecina de matchTemplate, em que procuramos os marcadores pré definidos
-        correlation_img = cv2.matchTemplate(self.base_image,self.template,cv2.TM_SQDIFF_NORMED)
+        # Parameters will need tweaking depending on the specific size and characteristics of the blobs
 
-        corrcopy = correlation_img.copy()
+        # Set up the detector with default parameters.
+        params = cv2.SimpleBlobDetector_Params()
+        
+        # Filter by Area.
+        params.filterByArea = True
+        params.minArea = 200 # Minimum area of the blobs
+        params.maxArea = 3000 # Maximum area of the blobs
+        
+        # Filter by Circularity
+        params.filterByCircularity = True
+        params.minCircularity = 0.85 # Minimum circularity of the blobs
+        params.maxCircularity = 1.0 # Maximum circularity of the blobs
 
+        # Filter by Inertia (ratio of the minor axis to the major axis)
+        params.filterByInertia = True
+        params.minInertiaRatio = 0.9  # Circles will have a ratio near 1
+        
+        # Filter by Convexity (how much the shape fills its convex hull)
+        params.filterByConvexity = True
+        params.minConvexity = 0.85
+        
+        # Create a detector with the parameters
+        detector = cv2.SimpleBlobDetector_create(params)
+        
+        # Detect blobs
+        keypoints = detector.detect(self.base_image)
+        
+        # Draw detected blobs as red circles.
+        # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of the blob
+        im_with_keypoints = cv2.drawKeypoints(self.base_image, keypoints, np.array([]), (0, 0, 255),
+                                            cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        
         self.markers = MarkerList(self.template)
-        # percorre as localizações em que houve a maior "correspondencia entre as imagens"
-        for i in range(0, self.markers_amount):      
-            # get max value and location of max
-            _, max_val, _, max_loc = cv2.minMaxLoc(corrcopy)
+        for keypoint in keypoints:
+            marker = Marker(keypoint.pt[0],keypoint.pt[1], keypoint.size)
+            self.markers.add(marker)
 
-            # se o valor de correspondencia (percentual) for maior que o match_thresh (arbitrariamente dfinido como 0,95), 
-            # interpretamos que se trata de um marcador
-            if max_val > self.match_thresh:
-                marker = Marker(max_loc[0],max_loc[1], self.template)
-                self.markers.add(marker)  
-                # desenhamos um círculo ao redor do marcador
-                cv2.circle(corrcopy, (marker.x1,marker.y1), self.match_radius, 0, -1)
-                i = i + 1               
-            else:
-                break
+        # return im_with_keypoints, keypoints
 
-        if self.markers.length() != 4:
-            raise Exception(f"Número de marcadores detectados difere de 4: {self.markers.length()} encontrados")
+        # Save the image with keypoints for review
+        output_image_path = f"testes/{time.strftime('%Y%m%d-%H%M%S')}.jpeg"
+        cv2.imwrite(output_image_path, im_with_keypoints)
 
     def cropp_image(self):
         """ corta a imagem através da localização dos marcadores"""
