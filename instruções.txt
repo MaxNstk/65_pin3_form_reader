@@ -9,4 +9,12 @@ Após a execução desses, é possível executar a aplicação sem internet, exe
 1. ITPFormsWindows.bat
 2. ITPFormsLinux.sh
 
-Sobre o projeto.
+ - O PROJETO IRÁ EXECUTAR UM SERVIDOR LOCAL EM SEU COMPUTADOR, GARANTA QUE A PORTA 8000 ESTEJA LIVRE.
+ - Sendo assim, é possivel executar os comandos e acessar o sistema através do navegador em http://127.0.0.1:8000/
+
+Sobre o projeto:
+
+ - O modelo de marcador se encontra em utils/markers
+ - As configurações geradas ao salvar uma configuração pela tela se econtram em utils/config (nome conforme a data em que foi salva)
+
+https://www.ilovepdf.com/
