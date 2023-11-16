@@ -1,8 +1,8 @@
-A aplicaçãop necessita de dependencias, essas, se encontram dentro de venvLinux e venvWindows, ja pre instaladas, 
-elas correspondem ao python3.10 com as bibliotecas presentes em requeirements.txt, caso seja necessário recriá-las
-é necessário entrar na pasta executáveis e executar como administrador os comandos: 
+A aplicação necessita de dependencias, essas, se encontram dentro de venvLinux e venvWindows, ja pre instaladas, 
+elas correspondem ao python3.10 com as bibliotecas presentes em requeirements.txt.
+Caso seja necessário recriá-las é necessário entrar na pasta executáveis e executar como administrador os comandos: 
 
-1. PrimeiraVezWindows.bat 
+1. PrimeiraVezWindows.bat (precisa instalar o python 3.10)
 2. PrimeiraVezLinux.sh (deve se entrar no diretório executáveis para ele funcionar corretamente "sudo mode")
 
 O fluxo normal/padrão segue conforme abaixo:
