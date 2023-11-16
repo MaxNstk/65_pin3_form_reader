@@ -1,11 +1,13 @@
-Para executar a aplicação é necessário instalar as dependências. Para isso existem dois executáveis:
+A aplicaçãop necessita de dependencias, essas, se encontram dentro de venvLinux e venvWindows, ja pre instaladas, 
+elas correspondem ao python3.10 com as bibliotecas presentes em requeirements.txt, caso seja necessário recriá-las
+é necessário entrar na pasta executáveis e executar como administrador os comandos: 
 
-1. PrimeiraVezWindows.bat
-2. PrimeiraVezLinux.sh (deve se entrar no diretório executáveis para ele funcionar corretamente "sudo source PrimeiraVezLinux.sh")
+1. PrimeiraVezWindows.bat 
+2. PrimeiraVezLinux.sh (deve se entrar no diretório executáveis para ele funcionar corretamente "sudo mode")
 
-Execute o comando referente ao seu SO. 
-Esses comandos devem ser executádos com privilégios de administrador e com internet.
-Após a execução desses, é possível executar a aplicação sem internet, executando os comandos:
+O fluxo normal/padrão segue conforme abaixo:
+
+É possível executar a aplicação sem internet, executando os comandos como administrador:
 
 1. ITPFormsWindows.bat
 2. ITPFormsLinux.sh (deve se entrar no diretório executáveis para ele funcionar corretamente "sudo source PrimeiraVezLinux.sh")
