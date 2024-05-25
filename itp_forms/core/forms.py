@@ -1,0 +1,115 @@
+from django import forms
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Button,Layout, Div, Field, HTML
+
+from itp_forms.core.config import Config
+
+class FormHelperForm(forms.Form):
+
+    form_tag = False
+    add_submit=False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        if self.add_submit:
+            self.helper.add_input(Submit('submit', 'Enviar'))
+
+class IndexForm(FormHelperForm):
+
+    form_tag = True
+    add_submit = True
+    
+    base_form_upload = forms.FileField(required=False, label='Formulário base')
+    json_config_upload = forms.FileField(required=False, label='Json de configuração')
+
+class ConfigurationForm(FormHelperForm):
+
+    form_tag = True
+    
+    column_amount = forms.IntegerField(label='Quantidade de colunas')
+    y_space_between_cells = forms.FloatField(label='Espaçamento entre linhas (px)')
+    x_space_between_cells = forms.FloatField(label='Espaçamento entre colunas (px)')
+
+    column_amount = forms.IntegerField(label='Quantidade de colunas')
+
+    first_group_row_amount = forms.IntegerField(label='1º Agrupamento')
+    second_group_row_amount = forms.IntegerField(label='2º Agrupamento')
+    third_group_row_amount = forms.IntegerField(label='3º Agrupamento')
+    fourth_group_row_amount = forms.IntegerField(label='4º Agrupamento')
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            Div(
+                Div(Button('update_image','Atualizar Informações',css_class='btn btn-primary w-100', css_id='btn-update-info'), css_class='col-lg-12'),
+                css_class='row'
+            ),
+            Div(
+                Div(Field('column_amount'),css_class='col-lg-12'),
+                Div(Field('y_space_between_cells'),css_class='col-lg-12'),
+                Div(Field('x_space_between_cells'),css_class='col-lg-12'),
+                css_class='row'
+            ),
+            Div(
+                Div(
+                    Div(
+                        Div(Field('first_group_row_amount', placeholder='Quantidade de linhas'),css_class='col-lg-12'),
+                        Div(Button('Limpar', 'Definir célula inicial', css_class='btn btn-primary w-100', css_id='bt-set-grouping-1'),css_class='col-lg-12'),
+                        css_class='row'
+                    ),
+                css_class="card-body"),
+            css_class="card"),
+            Div(
+                Div(
+                    Div(
+                        Div(Field('second_group_row_amount', placeholder='Quantidade de linhas'),css_class='col-lg-12'),
+                        Div(Button('Limpar', 'Definir célula inicial', css_class='btn btn-primary w-100', css_id='bt-set-grouping-2'),css_class='col-lg-12'),
+                        css_class='row'
+                    ),
+                css_class="card-body"),
+            css_class="card"),
+            Div(
+                Div(
+                    Div(
+                        Div(Field('third_group_row_amount', placeholder='Quantidade de linhas'),css_class='col-lg-12'),
+                        Div(Button('Limpar', 'Definir célula inicial', css_class='btn btn-primary w-100', css_id='bt-set-grouping-3'),css_class='col-lg-12'),
+                        css_class='row'
+                    ),
+                css_class="card-body"),
+            css_class="card"),
+            Div(
+                Div(
+                    Div(
+                        Div(Field('fourth_group_row_amount', placeholder='Quantidade de linhas'),css_class='col-lg-12'),
+                        Div(Button('Limpar', 'Definir célula inicial', css_class='btn btn-primary w-100', css_id='bt-set-grouping-4'),css_class='col-lg-12'),
+                        css_class='row'
+                    ),
+                css_class="card-body"),
+            css_class="card"),
+        )
+        
+class AnswersForm(FormHelperForm):
+    
+    form_tag = True
+    add_submit = True
+
+    file = forms.FileField(required=False, label='Upload do arquivo de respostas')
+    fill_precentage_to_consider_filled = forms.IntegerField(required=True, label='Percentual para se considerado preenchido',
+        help_text='Percentual mínimo de preenchimento da célula para ser classificada como preenchida.')
+    fill_precentage_to_consider_doubtful = forms.IntegerField(required=True, label='Percentual para se considerado duvidoso',
+        help_text='Percentual mínimo de preenchimento da célula para ser classificada como duvidosa.')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['fill_precentage_to_consider_filled'].initial = Config.instance().fill_precentage_to_consider_filled
+        self.fields['fill_precentage_to_consider_doubtful'].initial = Config.instance().fill_precentage_to_consider_doubtful
+
+        self.helper.layout = Layout(
+            Div(Div(Field('file'), css_class='col-lg-12'),css_class='row'),
+            Div(Div(Field('fill_precentage_to_consider_filled',), css_class='col-lg-12'),css_class='row justify-content-center'),
+            Div(Div(Field('fill_precentage_to_consider_doubtful',), css_class='col-lg-12'),css_class='row justify-content-center'),
+        )

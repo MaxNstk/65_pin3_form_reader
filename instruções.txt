@@ -1,0 +1,51 @@
+A aplicação necessita de dependencias, essas, se encontram dentro de venvLinux e venvWindows, ja pre instaladas, 
+elas correspondem ao python3.10 com as bibliotecas presentes em requeirements.txt.
+Caso seja necessário recriá-las é necessário entrar na pasta executáveis e executar como administrador os comandos: 
+
+1. PrimeiraVezWindows.bat (precisa instalar o python 3.10)
+2. PrimeiraVezLinux.sh (deve se entrar no diretório executáveis para ele funcionar corretamente "sudo mode")
+
+O fluxo normal/padrão segue conforme abaixo:
+
+É possível executar a aplicação sem internet, executando os comandos como administrador:
+
+1. ITPFormsWindows.bat
+2. ITPFormsLinux.sh (deve se entrar no diretório executáveis para ele funcionar corretamente "sudo source PrimeiraVezLinux.sh")
+
+ - O PROJETO IRÁ EXECUTAR UM SERVIDOR LOCAL EM SEU COMPUTADOR, GARANTA QUE A PORTA 8000 ESTEJA LIVRE.
+ - Sendo assim, é possivel executar os comandos e acessar o sistema através do navegador em http://127.0.0.1:8000/
+
+Sobre o projeto:
+
+ - O modelo de marcador se encontra em utils/markers
+ - As configurações geradas ao salvar uma configuração pela tela se econtram em utils/config (nome conforme a data em que foi salva)
+ - Em utils/exemplos existem modelos funcionais para serem utilizados para validação do fluxo, caso necessário.
+ - O sistema funciona muito melhor com formas quadradas nos modelos de resposta
+ - Durante o fluxo do sistema, os arquivos intermediários são salvos na pasta media, utilizando a data e hora em que foram upados como nome, conforme a seguir:
+    - 01_pdf_uploads: Corresponde aos pds enviados no formulário base
+    - 02_img_results: Corresponde as imagens geradas através dos pdfs enviados
+    - 03_cropped_images: Corresponde a imagem cortada nos marcadores encontrados
+    - 04_edited_cropped_images: Corresponde a imagem feita durante a configuração da localização das celulas (a que aparece na cofniguração)
+    - 05_pdf_answers_folder: Corresponde aos formulários resposta enviados
+    - 06_images_answers_folder: Contem subdiretorios, cada diretorio representa a conversão do pdf feita.
+        - Cada subdiretorio tem cada uma das páginas do pdf de resposta com a nomenclatura p_{índice_da_pagina}
+        - Cada subdiretório tem cada uma das páginas interpretadas, ou seja, onde as cálulas foram lidas, 
+        é possível identificar se a configuração bateu com as respostas.
+    - 07_xlsx_answers_folder: Corrersponde aos arquivos excel gerados como resultado final
+ 
+
+Para edição dos pdfs para colocar o marcador, é sugerido o site: https://www.ilovepdf.com/
+
+
+EXISTEM IMPLICAÇÕES PARA O PROJETO FUNCIONAR CORRETAMENTE:
+
+    1. Garanta que está utilizando os formatos certos, pdf para os formulários e json para o arquivo de configuração
+    2. Analise seus marcadores, no pdf de base eles devem estar alinhados perfeitamente
+    3. O método de detecção dos marcadores se baseia em detecção de círculos, com parametros definidos para achar somente os marcadores,
+    entretanto é possível que esteja sendo identificado outra forma circular que se adeque aos parâmetros. Tente editar o modelo e fazer o teste.
+    4. Não renomeie nada dentro da estrutura do projeto, nem pastas nem arquivos, isso pode implicar no não funcionamento dele,
+    caso deseje, faça uma cópia para fora da estrutura.
+    5. Utilize a estrutura de pastas com os arquivos intermediários a seu favor, é possível indentificar o que estpa acontecendo por meio deles também
+    6. O sistema roda em um servidor web local, portanto crtl+F5 pode ser a solução, bem como reiniciar o processo, 
+    acessando a pagina incial novamente e até mesmo em últimos casos reiniciando o servidor
+

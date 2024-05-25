@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+    
+{% block content %}
+
+        <div class="row">   
+                <div class="col-lg-12">
+                    <div class="card w-100">
+                        <div class="card-header h2 d-flex justify-content-center">Resultado.xlsx</div>
+                        <div class="card-body">
+                            <div class="col-lg-12 d-flex justify-content-center">
+                                <a href="{% url 'get_result' %}"> 
+                                    <i class="fa fa-4x fa-file-excel-o mr-3 d-flex align-items-center"  aria-hidden="true"> 
+                                        <div class="h3"> Clique aqui para baixar</div>
+                                    </i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% for page, results in pages_infos.items %}
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header h4"> Inconsistencias Formulário N {{page}}</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    {% for question, doubt_answers in results.items %}
+                                        <div>
+                                        Questão {{question}}: 
+                                            {% for doubt_question in doubt_answers %}
+                                                {{ doubt_question }}
+                                            {% endfor %}
+                                        </div>  
+                                    {% endfor %}
+                                </div>
+                                <div class="col-lg-4">
+                                    <a class="btn btn-primary h3" target="blank" href="{% url 'get_form' page %}">Acessar Formulário</a>
+                                    <a class="btn btn-primary h3" target="blank" href="{% url 'get_interpreted_form' page %}">Acessar Leitura feita no formulário</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+</div>
+
+{% endblock%}

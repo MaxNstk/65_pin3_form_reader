@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{%block style %} 
+    <style>
+        /* Style the file input for a larger appearance */
+        .custom-file-label::after {
+            content: "Browse"; 
+        }
+        .custom-file-input.is-valid~.custom-file-label,
+        .was-validated .custom-file-input:valid~.custom-file-label {
+            border-color: #28a745;
+        }
+        .custom-file-input.is-invalid~.custom-file-label,
+        .was-validated .custom-file-input:invalid~.custom-file-label {
+            border-color: #dc3545;
+        }
+        /* Center the card vertically */
+        .vertical-center {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+{% endblock %}
+    
+{% block content %}
+
+    <div class="container vertical-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h1 class="card-title">Upload do formulário respostas</h1>
+                            {% crispy form %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock%}
