@@ -1,6 +1,11 @@
-Projeto para leitura de formaulários de resposta acertativos, divido em duas partes:
+Projeto destinado a leitura de formulários de resposta massivos, como por exemplo a prova do ENEM.
 
-Leitura de um formulário base e configuração de posições
-Leitura de n pdf resposidos e exportação das respostas em formato xlsx
+Consiste incialmente em um processo de configuração de layout:
+![alt text](https://github.com/MaxNstk/65_pin3_form_reader/blob/main/images/configuracao.png?raw=true)
+![alt text](https://github.com/MaxNstk/65_pin3_form_reader/blob/main/images/configuracao2.png?raw=true)
 
-Manual de isntruções incluso em pdf
+Após a configuração, é possível receber diversos formulários respondidos escaneados e o sistema irá disponibilizar as respostas em formato xlxs, bem como pdf da leitura feita e também uma lista com respostas duvidosas, que não signifiquem necessairmanete preenchimento:
+
+![alt text](https://github.com/MaxNstk/65_pin3_form_reader/blob/main/images/leitura2.png?raw=true)
+![alt text](https://github.com/MaxNstk/65_pin3_form_reader/blob/main/images/leitura.png?raw=true)
+
